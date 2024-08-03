@@ -1,26 +1,25 @@
-async function verifyUserSignInToken() {
-  const token = localStorage.getItem("token");
-  if (token) {
-    const response = await fetch("/api/user/auth", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Token verification failed");
-    }
-    return await response.json();
-  } else {
-    return null;
-    // return Promise.reject(new Error("No token found"));
-  }
-}
+// async function verifyUserSignInToken() {
+//   const token = localStorage.getItem("token");
+//   if (token) {
+//     const response = await fetch("/api/user/auth", {
+//       method: "GET",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     if (!response.ok) {
+//       throw new Error("Token verification failed");
+//     }
+//     return await response.json();
+//   } else {
+//     return null;
+//     // return Promise.reject(new Error("No token found"));
+//   }
+// }
 
 document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("myModal");
   const navSignIn = document.getElementById("signin-signup");
-  const navBookingTour = document.getElementById("event-explore");
   const signInForm = document.getElementById("signInForm");
   const signUpForm = document.getElementById("signUpForm");
   const switchToSignUp = document.getElementById("switchToSignUp");
@@ -28,9 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const signInError = document.getElementById("signin-error");
   const signUpError = document.getElementById("signup-error");
   const signUpSuccess = document.getElementById("signup-success");
-  const StartBooking = document.getElementById("start-booking");
-  const today = new Date().toISOString().split("T")[0];
-  document.getElementById("booking-date").min = today;
 
   modal.style.display = "none";
   //Modal 登入註冊互動視窗
@@ -71,24 +67,24 @@ document.addEventListener("DOMContentLoaded", function () {
     signInForm.classList.add("active");
   };
 
-  function checkUserSignInStatus() {
-    verifyUserSignInToken()
-      .then((data) => {
-        if (data) {
-          navSignIn.textContent = "登出系統";
-          navSignIn.onclick = handleSignOut;
-        } else {
-          navSignIn.textContent = "登入/註冊";
-          navSignIn.onclick = clickToShowModal;
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        localStorage.removeItem("token");
-        navSignIn.textContent = "登入/註冊";
-        navSignIn.onclick = clickToShowModal;
-      });
-  }
+  // function checkUserSignInStatus() {
+  //   verifyUserSignInToken()
+  //     .then((data) => {
+  //       if (data) {
+  //         navSignIn.textContent = "登出系統";
+  //         navSignIn.onclick = handleSignOut;
+  //       } else {
+  //         navSignIn.textContent = "登入/註冊";
+  //         navSignIn.onclick = clickToShowModal;
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       localStorage.removeItem("token");
+  //       navSignIn.textContent = "登入/註冊";
+  //       navSignIn.onclick = clickToShowModal;
+  //     });
+  // }
 
   function handleSignOut() {
     localStorage.removeItem("token");
@@ -98,20 +94,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.href = "/booking";
   }
 
-  navBookingTour.onclick = function () {
-    verifyUserSignInToken()
-      .then((data) => {
-        if (data) {
-          redirectToBookingPage();
-        } else {
-          clickToShowModal();
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        clickToShowModal();
-      });
-  };
   function getAttractionIDFromURL() {
     const href = location.href;
     const pattern = /^http:.+\/attraction\/(\d+)$/;

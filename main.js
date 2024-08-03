@@ -5,14 +5,16 @@ const app = express();
 app.use(express.static("static"));
 
 //route
-app.get("/", function (req, res) {});
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + "/static/index.html");
+});
 
 app.get("/member", function (req, res) {
-  res.render("index.html");
+  res.sendFile(__dirname + "/static/index.html");
 });
 
 app.get("/error", function (req, res) {
-  res.send("Hello Homepage");
+  res.send("something wrong");
 });
 
 app.listen(8001, function () {
