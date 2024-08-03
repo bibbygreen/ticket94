@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Board</title>
+  <link rel="stylesheet" href="/static/css/index.css">
+  <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css' rel='stylesheet'></link>
+</head>
+<body>
+  <header>
+    <div class="navbar-container">
+      <div class="navbar">
+        <div class="headline">
+          <div>ticket94</div>
+        </div>
+        <div class="menu">
+          <div id="event-explore">活動探索</div>
+          <div id="signin-signup">會員登入</div>
+        </div>
+      </div>     
+    </div>
+  </header>
+  
+  <section id="signin-modal">
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <div class="model-decorator"></div>
+        <span class="close">&times;</span>
+        <form action="/api/user/auth" method="PUT" id="signInForm" class="form-container active">
+          <h2>登入會員帳號</h2>
+          <div class="form-group">
+            <label for="signin-email"></label>
+            <input type="email" id="signin-email" name="email" placeholder="輸入電子信箱" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="signin-password"></label>
+            <input type="password" id="signin-password" name="password" placeholder="輸入密碼">
+          </div>
+          <div class="form-group">
+            <button type="submit">登入帳戶</button>
+          </div>
+          <p>還沒有帳戶？<span class="switch-link" id="switchToSignUp">點此註冊</span></p>
+          <div id="signin-error" class="error-message"></div>
+        </form>
+  
+        <form action="/api/user" method="POST" id="signUpForm" class="form-container">
+          <h2>註冊會員帳號</h2>
+          <div class="form-group">
+            <label for="signup-name"></label>
+            <input type="name" id="signup-name" name="name" placeholder="輸入姓名" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="signup-email"></label>
+            <input type="email" id="signup-email" name="email" placeholder="輸入電子信箱" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="signup-password"></label>
+            <input type="password" id="signup-password" name="password" placeholder="輸入密碼">
+          </div>
+          <div class="form-group">
+            <button type="submit">註冊新帳戶</button>
+          </div>
+          <p>已經有帳戶了？<span class="switch-link" id="switchToSignIn">點此登入</span></p>
+          <div id="signup-error" class="error-message"></div>
+          <div id="signup-success" class="success-message"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-profile">
+    <div class="profile-container">
+      <div class="profile-img" id="slide">
+        <div class="btn-block">
+          <img src="/static/pics/NB-left-arrow.png" id="btn-left" alt="Left Arrow">
+          <img src="/static/pics/NB-right-arrow.png" id="btn-right" alt="Right Arrow">
+        </div>
+      </div>
+      <div class="dots"></div>
+    </div>
+  </section>
+  
+  
+  <hr>
+  <h2 class="sub-title">近期展演活動</h2>
+  <div class="events-container">
+    
+    <div class="event-box">
+      <img src="https://t.kfs.io/upload_images/208325/IMG_0654_medium.jpeg" alt="">
+      <div class="div-event-title">WIM, Debut Concert in Taipei</div>
+    </div>
+    <div class="event-box">
+      <img src="https://t.kfs.io/upload_images/208106/GI_1200x630_medium.jpg" alt="">
+      <div class="div-event-title">Great Inn 1st Fan Meeting In Taipei</div>
+    </div>
+    <div class="event-box">
+      <img src="https://t.kfs.io/upload_images/207432/__G_I-DLE_MAIN-POSTER-1200x630_medium.jpg" alt="">
+      <div class="div-event-title">2024 (G)I-DLE WORLD TOUR [iDOL] IN TAIPEI</div>
+    </div>
+    <div class="event-box">
+      <img src="https://t.kfs.io/upload_images/208003/KKTIX_TILLYBIRDS2024TOUR_TPE__1200x630_medium.jpg" alt="">
+      <div class="div-event-title">Tilly Birds Live in Taipei 2024</div>
+    </div>
+    <div class="event-box">
+      <img src="https://t.kfs.io/upload_images/208148/1200x630_medium.jpg" alt="">
+      <div class="div-event-title">𝐄𝐂𝐎 𝐋!𝐕𝐄 𝐂𝐎𝐍𝐂𝐄𝐑𝐓</div>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer-text">- ticket just for fun -</div>
+  </footer>
+  <script src="/static/scripts/index.js"></script>
+  <script src="/static/scripts/userApi.js"></script>
+</body>
+</html>
