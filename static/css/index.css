@@ -72,7 +72,7 @@ header{
   height: 10px;
   left: 0px;
   top: 0px;
-  background: linear-gradient(270deg, #1D50A1 0%, #b4bbf9 100%);
+  background: linear-gradient(270deg, #611da1 0%, #b4bbf9 100%);
   border: none;
 }
 .modal-content {
@@ -136,7 +136,7 @@ header{
   cursor: pointer;
   width: 310px;
   height: 47px;
-  background-color: #1D50A1;
+  background-color: #611da1;
   border-radius: 5px;
   color: white;
   font-size: 19px;

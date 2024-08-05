@@ -1,21 +1,21 @@
-// async function verifyUserSignInToken() {
-//   const token = localStorage.getItem("token");
-//   if (token) {
-//     const response = await fetch("/api/user/auth", {
-//       method: "GET",
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
-//     if (!response.ok) {
-//       throw new Error("Token verification failed");
-//     }
-//     return await response.json();
-//   } else {
-//     return null;
-//     // return Promise.reject(new Error("No token found"));
-//   }
-// }
+async function verifyUserSignInToken() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const response = await fetch("/api/user/auth", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Token verification failed");
+    }
+    return await response.json();
+  } else {
+    return null;
+    // return Promise.reject(new Error("No token found"));
+  }
+}
 
 document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("myModal");
@@ -67,48 +67,40 @@ document.addEventListener("DOMContentLoaded", function () {
     signInForm.classList.add("active");
   };
 
-  // function checkUserSignInStatus() {
-  //   verifyUserSignInToken()
-  //     .then((data) => {
-  //       if (data) {
-  //         navSignIn.textContent = "登出系統";
-  //         navSignIn.onclick = handleSignOut;
-  //       } else {
-  //         navSignIn.textContent = "登入/註冊";
-  //         navSignIn.onclick = clickToShowModal;
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //       localStorage.removeItem("token");
-  //       navSignIn.textContent = "登入/註冊";
-  //       navSignIn.onclick = clickToShowModal;
-  //     });
-  // }
-
   function handleSignOut() {
     localStorage.removeItem("token");
     checkUserSignInStatus();
   }
-  function redirectToBookingPage() {
-    window.location.href = "/booking";
-  }
 
-  function getAttractionIDFromURL() {
-    const href = location.href;
-    const pattern = /^http:.+\/attraction\/(\d+)$/;
-    const match = href.match(pattern);
-    return match ? match[1] : null;
+  function checkUserSignInStatus() {
+    verifyUserSignInToken()
+      .then((data) => {
+        if (data) {
+          navSignIn.textContent = "會員中心";
+          navSignIn.onclick = handleSignOut;
+        } else {
+          navSignIn.textContent = "登入/註冊";
+          navSignIn.onclick = clickToShowModal;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        localStorage.removeItem("token");
+        navSignIn.textContent = "登入/註冊";
+        navSignIn.onclick = clickToShowModal;
+      });
   }
 
   signUpForm.addEventListener("submit", function (event) {
     event.preventDefault();
+
     const formData = new FormData(signUpForm);
     const data = {
       name: formData.get("name"),
       email: formData.get("email"),
       password: formData.get("password"),
     };
+
     fetch("/api/user", {
       method: "POST",
       headers: {
@@ -159,4 +151,5 @@ document.addEventListener("DOMContentLoaded", function () {
         signInError.textContent = error.message;
       });
   });
+  checkUserSignInStatus();
 });
