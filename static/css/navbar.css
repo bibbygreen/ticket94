@@ -1,0 +1,42 @@
+.header-container{
+  text-align: center;
+}
+header{
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #E8E8E8;
+}
+.navbar-container{
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  display: flex;
+  justify-content: space-between;
+  background: #C0A3C1
+}
+.navbar{
+  width: 1200px; 
+  display: flex;
+  justify-content: space-between;
+  margin: auto;
+}
+.headline div{
+  display: block;
+  text-decoration: none;
+  padding: 0 10px;
+  cursor: pointer;
+  color: #542168;
+  font-size: 30px;
+  font-weight: bold;
+}
+.menu{
+  display: flex;
+}
+.menu div{
+  display: block;
+  text-decoration: none;
+  padding: 0 20px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #542168;
+}

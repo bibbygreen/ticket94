@@ -6,9 +6,10 @@
 #E9C4CB */
 @charset "UTF-8";
 *{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .header-container{
@@ -264,10 +265,10 @@ header{
   cursor: pointer;
 }
 .dot.active {
-  background-color:rgba(0, 0, 0, 0.5);
+  background-color:rgba(71, 70, 70, 0.5);
   border: #ffffff solid 1px;
 }
-.sub-title{
+/* .sub-title{
   text-align: center;
   margin: 10px auto;
 }
@@ -299,7 +300,122 @@ header{
   font-size: 16px;
   padding: 5px;
   word-wrap: break-word;
+} */
+
+.container {
+  max-width: 1200px;
+  width: 90%;
+  margin: auto;
+  padding: 20px;
 }
+
+.latest-news {
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.latest-news h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.news-item {
+  margin-bottom: 15px;
+}
+
+.news-item h3 {
+  margin: 0;
+}
+
+.news-item p {
+  margin: 5px 0 0;
+}
+
+.title-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px; /* Space between tabs */
+}
+
+.tab {
+  display: inline-block;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-left: 10px; /* Adjust margin for spacing between tabs */
+  border-radius: 5px;
+  text-align: center;
+}
+
+.tab.active {
+  background-color: #1D50A1;
+  color: white;
+  border-color: #1D50A1;
+}
+
+.show-all-button {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+}
+
+.tab-content {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.events-container {
+  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: auto;
+  margin-bottom: 100px;
+}
+
+.event-box {
+  width: 502px;
+  border: 1px solid #CCCCCC;
+  border-radius: 5px;
+  margin-right: 7px;
+  margin-left: 7px;
+  margin-top: 20px;
+}
+
+.event-box img {
+  max-height: 300px;
+  width: 500px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.div-event-title {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 5px;
+  word-wrap: break-word;
+}
+
+.event-box.inactive {
+  display: none; /* Hide inactive events */
+}
+
 
 .footer {
   display: flex;
@@ -314,6 +430,8 @@ header{
   text-align: center;
   font-size: 22px;
 }
+
+
 
 @media (min-width: 351px) and (max-width: 450px) {
   .input-username{

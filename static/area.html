@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Ticket Selection</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/area.css">
+</head>
+<body>
+  <header>
+    <div class="navbar-container">
+      <div class="navbar">
+        <div class="headline">
+          <div>Ticket94</div>
+        </div>
+        <div class="menu">
+          <div id="event-explore">活動探索</div>
+          <div id="signin-signup"></div>
+        </div>
+      </div>     
+    </div>
+  </header>
+  <!-- <header>
+    <h1>Event Ticket Selection</h1>
+  </header> -->
+
+  <main>
+    <div class="container">
+      <section class="progress-bar">
+        <div class="progress-step active">選擇票區</div>
+        <div class="progress-step">選擇座位</div>
+        <div class="progress-step">確認資料</div>
+        <div class="progress-step">付款結帳</div>
+      </section>
+
+      <section class="event-profile">
+        <div class="event-image">
+          <img src="https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg" alt="Event Image">
+        </div>
+        <div class="event-details">
+          <h2>2024 THE LAST FAN-CON [CURTAIN CALL] IN TAIPEI</h2>
+          <p>Date: 2024年09月14日 (六)</p>
+          <p>Time: 18:00</p>
+          <p>Location: TICC台北國際會議中心</p>
+        </div>
+      </section>
+
+      <section class="area-selection">
+        <div class="area-diagram">
+          <img src="/pics/seat-diagram.jpg" alt="Seating Diagram">
+        </div>
+        <div class="area-options">
+          <h2>票區一覽</h2>
+          <div class="area" data-area="A">
+            <span class="area-name">A區</span>
+            <span class="area-price">NT 3,000元</span>
+          </div>
+          <div class="area" data-area="B">
+            <span class="area-name">B區</span>
+            <span class="area-price">NT 3,000元</span>
+          </div>
+          <div class="area" data-area="C">
+            <span class="area-name">C區</span>
+            <span class="area-price">NT 2,500元</span>
+          </div>
+          <div class="area" data-area="D">
+            <span class="area-name">D區</span>
+            <span class="area-price">NT 2,500元</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="ticket-selection">
+        <!-- <div class="selection-options">
+          <h2>選擇座位</h2>
+          <label><input type="radio" name="seat-selection" value="manual"> 自行選位</label>
+          <label><input type="radio" name="seat-selection" value="auto"> 電腦配位</label>
+        </div> -->
+        <div class="ticket-options" id="ticket-options">
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="scripts/area.js"></script>
+</body>
+</html>

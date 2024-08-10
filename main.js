@@ -12,9 +12,11 @@ app.use(bodyParser.json()); // For parsing JSON bodies
 
 // Import routes
 const userRoutes = require("./routes/userRoutes");
+const checkSeatsRoutes = require("./routes/checkSeatsRoutes");
 
 // Use routes
 app.use("/api/user", userRoutes);
+app.use("/api", checkSeatsRoutes);
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");

@@ -101,9 +101,57 @@ function initializeSlider() {
 }
 
 const tem_images = [
+  "https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg",
   "https://t.kfs.io/upload_images/208325/IMG_0654_medium.jpeg",
   "https://t.kfs.io/upload_images/208106/GI_1200x630_medium.jpg",
   "https://t.kfs.io/upload_images/207432/__G_I-DLE_MAIN-POSTER-1200x630_medium.jpg",
 ];
 
 updateSlider(tem_images);
+
+document.getElementById("show-all").addEventListener("click", function () {
+  let events = document.querySelectorAll(".event-box");
+  events.forEach(function (event) {
+    event.classList.remove("inactive");
+  });
+
+  // Set active class for tab
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.classList.remove("active");
+  });
+  this.classList.add("active");
+});
+
+document.getElementById("show-popular").addEventListener("click", function () {
+  let events = document.querySelectorAll(".event-box");
+  events.forEach(function (event) {
+    if (event.classList.contains("popular")) {
+      event.classList.remove("inactive");
+    } else {
+      event.classList.add("inactive");
+    }
+  });
+
+  // Set active class for tab
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.classList.remove("active");
+  });
+  this.classList.add("active");
+});
+
+document.getElementById("show-upcoming").addEventListener("click", function () {
+  let events = document.querySelectorAll(".event-box");
+  events.forEach(function (event) {
+    if (event.classList.contains("upcoming")) {
+      event.classList.remove("inactive");
+    } else {
+      event.classList.add("inactive");
+    }
+  });
+
+  // Set active class for tab
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.classList.remove("active");
+  });
+  this.classList.add("active");
+});

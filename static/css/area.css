@@ -1,0 +1,141 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.progress-bar {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.progress-step {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  margin: 0 5px;
+}
+
+.progress-step.active {
+  background-color: #785aa8e2;
+  color: white;
+  border: 1px solid #785aa8e2;
+}
+
+.event-profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.event-image {
+  flex: 1;
+  padding: 10px;
+}
+
+.event-image img {
+  width: 100%;
+  height: auto;
+  max-width: 300px;
+}
+
+.event-details {
+  flex: 2;
+  padding: 10px;
+  text-align: left;
+}
+
+.area-selection {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.area-diagram {
+  flex: 1;
+  padding: 10px;
+}
+
+.area-diagram img {
+  width: 100%;
+  height: auto;
+  max-width: 500px;
+}
+
+.area-options {
+  flex: 1;
+  padding: 10px;
+  text-align: left;
+}
+
+.area {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.area:hover {
+  background-color: #f0f0f0;
+}
+
+.area.selected {
+  /* background-color: #007bff; */
+  font-weight: bold;
+  border: 5px solid #6939b7e2;
+}
+
+.selection-options {
+  margin: 20px 0;
+}
+
+.selected-area {
+  margin: 20px 0;
+  font-family: Arial, sans-serif; 
+}
+
+.selected-area h2 {
+  font-size: 24px; 
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.ticket-options label {
+  font-size: 18px; 
+  margin-right: 10px;
+}
+
+.ticket-options select {
+  font-size: 20px; 
+  /* padding: 10px; */
+  width: 60px;
+  height: 30px;
+  margin-bottom: 20px;
+}
+
+.confirm-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #0bad54;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.confirm-button:hover {
+  background-color: #078841;
+}
