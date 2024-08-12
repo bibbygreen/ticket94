@@ -1,3 +1,10 @@
+import {
+  handleModal,
+  handleSignOut,
+  checkUserSignInStatus,
+  handleForms,
+} from "./userApi.js";
+
 function updateSlider(images) {
   const slide = document.getElementById("slide");
   const dotsContainer = document.querySelector(".dots");
@@ -109,6 +116,19 @@ const tem_images = [
 
 updateSlider(tem_images);
 
+document.addEventListener("DOMContentLoaded", () => {
+  const { signInForm, signUpForm, signInError, signUpError, signUpSuccess } =
+    handleModal();
+  handleForms({
+    signInForm,
+    signUpForm,
+    signInError,
+    signUpError,
+    signUpSuccess,
+  });
+  checkUserSignInStatus();
+});
+
 document.getElementById("show-all").addEventListener("click", function () {
   let events = document.querySelectorAll(".event-box");
   events.forEach(function (event) {
@@ -155,3 +175,61 @@ document.getElementById("show-upcoming").addEventListener("click", function () {
   });
   this.classList.add("active");
 });
+
+const eventsContainer = document.querySelector(".events-container");
+let nextPage = null;
+let isFetching = false;
+
+async function fetchEvents(page) {
+  const url = encodeURI(`http://localhost:8001/api/events?page=${page}`);
+  isFetching = true;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Network response was not ok " + response.statusText);
+    }
+    const data = await response.json();
+
+    if (page === 0) {
+      // First page: replace existing list
+      eventsContainer.innerHTML = "";
+    }
+
+    renderEvents(data.data);
+    nextPage = data.nextPage;
+  } catch (error) {
+    console.error("There has been a problem with your fetch operation:", error);
+  } finally {
+    isFetching = false;
+  }
+}
+
+function renderEvents(events) {
+  events.forEach((event) => {
+    const eventBox = document.createElement("div");
+    eventBox.classList.add("event-box");
+
+    if (event.category) {
+      eventBox.classList.add(event.category); // Add category class
+    }
+
+    // Create the image element
+    const img = document.createElement("img");
+    img.src = event.pic;
+    img.alt = event.eventName;
+
+    // Create the title element
+    const title = document.createElement("div");
+    title.classList.add("div-event-title");
+    title.textContent = event.eventName;
+
+    // Append image and title to the event box
+    eventBox.appendChild(img);
+    eventBox.appendChild(title);
+
+    // Append the event box to the container
+    eventsContainer.appendChild(eventBox);
+  });
+}
+fetchEvents(0);

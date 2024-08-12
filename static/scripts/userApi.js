@@ -1,23 +1,19 @@
-async function verifyUserSignInToken() {
+// Utility function to verify user sign-in token
+export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
   if (token) {
     const response = await fetch("/api/user/auth", {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-    if (!response.ok) {
-      throw new Error("Token verification failed");
-    }
+    if (!response.ok) throw new Error("Token verification failed");
     return await response.json();
-  } else {
-    return null;
-    // return Promise.reject(new Error("No token found"));
   }
+  return null;
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+// Function to handle modal operations
+export function handleModal() {
   const modal = document.getElementById("myModal");
   const navSignIn = document.getElementById("signin-signup");
   const signInForm = document.getElementById("signInForm");
@@ -28,8 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const signUpError = document.getElementById("signup-error");
   const signUpSuccess = document.getElementById("signup-success");
 
-  modal.style.display = "none";
-  //Modal 登入註冊互動視窗
   function clickToShowModal() {
     modal.style.display = "block";
   }
@@ -46,54 +40,68 @@ document.addEventListener("DOMContentLoaded", function () {
     signUpError.textContent = "";
     signUpSuccess.textContent = "";
   }
+
   navSignIn.onclick = clickToShowModal;
 
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      closeModal();
-    }
-  };
-  document.getElementsByClassName("close")[0].onclick = function () {
-    closeModal();
+  window.onclick = (event) => {
+    if (event.target === modal) closeModal();
   };
 
-  switchToSignUp.onclick = function () {
+  document.getElementsByClassName("close")[0].onclick = closeModal;
+
+  switchToSignUp.onclick = () => {
     signInForm.classList.remove("active");
     signUpForm.classList.add("active");
     signInError.textContent = "";
   };
-  switchToSignIn.onclick = function () {
+
+  switchToSignIn.onclick = () => {
     signUpForm.classList.remove("active");
     signInForm.classList.add("active");
   };
 
-  function handleSignOut() {
-    localStorage.removeItem("token");
-    checkUserSignInStatus();
-  }
+  return { signInForm, signUpForm, signInError, signUpError, signUpSuccess };
+}
 
-  function checkUserSignInStatus() {
-    verifyUserSignInToken()
-      .then((data) => {
-        if (data) {
-          navSignIn.textContent = "會員中心";
-          navSignIn.onclick = handleSignOut;
-        } else {
-          navSignIn.textContent = "登入/註冊";
-          navSignIn.onclick = clickToShowModal;
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        localStorage.removeItem("token");
+// Function to handle sign out
+export function handleSignOut() {
+  localStorage.removeItem("token");
+  checkUserSignInStatus();
+}
+
+// Function to check user sign-in status and update UI
+export function checkUserSignInStatus() {
+  verifyUserSignInToken()
+    .then((data) => {
+      const navSignIn = document.getElementById("signin-signup");
+      if (data) {
+        navSignIn.textContent = "會員中心";
+        navSignIn.onclick = handleSignOut;
+      } else {
         navSignIn.textContent = "登入/註冊";
-        navSignIn.onclick = clickToShowModal;
-      });
-  }
+        navSignIn.onclick = () =>
+          (document.getElementById("myModal").style.display = "block");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      localStorage.removeItem("token");
+      document.getElementById("signin-signup").textContent = "登入/註冊";
+      document.getElementById("signin-signup").onclick = () =>
+        (document.getElementById("myModal").style.display = "block");
+    });
+}
 
-  signUpForm.addEventListener("submit", function (event) {
+// Function to handle form submissions
+export function handleForms({
+  signInForm,
+  signUpForm,
+  signInError,
+  signUpError,
+  signUpSuccess,
+}) {
+  signUpForm.addEventListener("submit", (event) => {
     event.preventDefault();
-
     const formData = new FormData(signUpForm);
     const data = {
       name: formData.get("name"),
@@ -103,9 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetch("/api/user", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
@@ -123,18 +129,17 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
-  signInForm.addEventListener("submit", function (event) {
+  signInForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const formData = new FormData(signInForm);
     const data = {
       email: formData.get("email"),
       password: formData.get("password"),
     };
+
     fetch("/api/user/auth", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
@@ -150,6 +155,19 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         signInError.textContent = error.message;
       });
+  });
+}
+
+// Initialize the sign-in and sign-up functionality
+document.addEventListener("DOMContentLoaded", () => {
+  const { signInForm, signUpForm, signInError, signUpError, signUpSuccess } =
+    handleModal();
+  handleForms({
+    signInForm,
+    signUpForm,
+    signInError,
+    signUpError,
+    signUpSuccess,
   });
   checkUserSignInStatus();
 });

@@ -1,46 +1,12 @@
+import {
+  saveSelectionToCookie,
+  getCookie,
+  loadSelectionFromCookie,
+} from "./cookieUtils.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const areas = document.querySelectorAll(".area");
   const ticketOptionsContainer = document.getElementById("ticket-options");
-
-  // Function to set a cookie
-  function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-      const date = new Date();
-      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-      expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-  }
-
-  // Function to get a cookie
-  function getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(";");
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === " ") c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-  }
-
-  // Function to save user selection to cookies
-  function saveSelectionToCookie(area, quantity) {
-    const selection = { area: area, quantity: quantity };
-    setCookie("userSelection", JSON.stringify(selection), 7); // Cookie expires in 7 days
-  }
-
-  // Function to load and display user selection from cookies
-  function loadSelectionFromCookie() {
-    const selection = getCookie("userSelection");
-    if (selection) {
-      const { area, quantity } = JSON.parse(selection);
-      // Display the stored selection if needed
-      console.log("Selected Area:", area);
-      console.log("Number of Tickets:", quantity);
-    }
-  }
 
   // Load selection from cookie on page load
   loadSelectionFromCookie();

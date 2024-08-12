@@ -1,29 +1,25 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Function to get a cookie
-  function getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(";");
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === " ") c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-  }
+import { getCookie, saveSelectionToCookie } from "./cookieUtils.js";
 
-  // Function to check available seats
+document.addEventListener("DOMContentLoaded", () => {
   function checkAvailableSeats(area, quantity) {
+    const quantityNumber = Number(quantity);
+
+    // console.log({ area, quantityNumber });
+
     fetch("/api/check-seats", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ area, quantity }),
+      body: JSON.stringify({ area, quantity: quantityNumber }),
     })
       .then((response) => response.json())
       .then((data) => {
+        // console.log(data);
         if (data.available) {
-          displaySummaryTable(area, quantity, data.seats);
+          const pricePerTicket = data.price;
+          displaySummaryTable(area, quantityNumber, data.seats, pricePerTicket);
+          saveSelectionToCookie(area, quantityNumber, pricePerTicket);
         } else {
           document.getElementById("summary-container").innerHTML =
             "<p>No available seats.</p>";
@@ -34,39 +30,45 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Function to display the summary table
-  function displaySummaryTable(area, quantity, seats) {
+  // checkAvailableSeats("B", 4);
+
+  function displaySummaryTable(area, quantity, seats, pricePerTicket) {
+    console.log(area);
+    console.log(quantity);
+    console.log(seats);
+    console.log(pricePerTicket);
+
     let totalPrice = 0;
+
     let seatRows = seats
       .map((seat) => {
         totalPrice += seat.price;
         return `
-        <tr>
-          <td>${seat.seat_num}</td>
-          <td>${seat.price}</td>
+          <tr>
+          <td>${area}區</td>
+          <td>${seat.row}排${seat.number}號</td>
+          <td>全票</td>
+          <td>${seat.price}元</td>
         </tr>
-      `;
+        `;
       })
       .join("");
 
     document.getElementById("summary-container").innerHTML = `
-      <h2>Booking Summary</h2>
+      <h2>確認選位結果</h2>
       <table>
         <thead>
           <tr>
-            <th>Seat</th>
-            <th>Price</th>
+            <th>票區</th>
+            <th>位置</th>
+            <th>票種</th>
+            <th>金額</th>
           </tr>
         </thead>
         <tbody>
           ${seatRows}
         </tbody>
-        <tfoot>
-          <tr>
-            <td>Total</td>
-            <td>${totalPrice}元</td>
-          </tr>
-        </tfoot>
+ 
       </table>
     `;
   }
@@ -75,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const selection = getCookie("userSelection");
   if (selection) {
     const { area, quantity } = JSON.parse(selection);
-    checkAvailableSeats(area, quantity);
+    const quantityNumber = Number(quantity); // Ensure quantity is a number
+    // console.log("Loaded from cookie:", { area, quantityNumber }); // Debug
+    checkAvailableSeats(area, quantityNumber);
   } else {
     document.getElementById("summary-container").innerHTML =
       "<p>No selection found.</p>";

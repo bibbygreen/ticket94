@@ -13,13 +13,19 @@ app.use(bodyParser.json()); // For parsing JSON bodies
 // Import routes
 const userRoutes = require("./routes/userRoutes");
 const checkSeatsRoutes = require("./routes/checkSeatsRoutes");
+const eventRoutes = require("./routes/eventRoutes");
 
 // Use routes
 app.use("/api/user", userRoutes);
 app.use("/api", checkSeatsRoutes);
+app.use("/", eventRoutes);
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");
+});
+
+app.get("/event/:id", function (req, res) {
+  res.sendFile(__dirname + "/static/event.html");
 });
 
 // app.get("/member", function (req, res) {

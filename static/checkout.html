@@ -4,21 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
+    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/checkout.css">
 </head>
 <body>
   <header>
-    <h1>Checkout</h1>
+    <div class="navbar-container">
+      <div class="navbar">
+        <div class="headline">
+          <div>Ticket94</div>
+        </div>
+        <div class="menu">
+          <div id="event-explore">活動探索</div>
+          <div id="signin-signup"></div>
+        </div>
+      </div>     
+    </div>
   </header>
 
   <main>
     <div class="container">
+      <section class="progress-bar">
+        <div class="progress-step">選擇票區</div>
+        <div class="progress-step active">選擇座位</div>
+        <div class="progress-step">確認資料</div>
+        <div class="progress-step">付款結帳</div>
+      </section>
       <section id="summary-container">
         <!-- Summary table will be inserted here -->
       </section>
+      <div class="div-button">
+        <button class="cancel-button">取消訂單</button>
+        <button id="previous-button" class="cancel-button">上一步</button>
+        <button class="confirm-button">我同意本節目規則，下一步</button>
+      </div>
+      
     </div>
   </main>
 
-  <script src="/scripts/checkout.js"></script>
+  <script type="module" src="/scripts/checkout.js"></script>
 </body>
 </html>

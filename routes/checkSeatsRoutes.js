@@ -5,32 +5,39 @@ const pool = require("../config/dbConfig");
 // API endpoint to check available seats
 router.post("/check-seats", async (req, res) => {
   const { area, quantity } = req.body;
+  const quantityNumber = Number(quantity);
 
   // Validate input
-  if (!area || typeof quantity !== "number" || quantity <= 0) {
+  if (!area || typeof quantityNumber !== "number" || quantityNumber <= 0) {
+    console.error("Invalid input:", { area, quantityNumber });
     return res.status(400).json({ error: "Invalid area or quantity." });
   }
 
   try {
     // Query to find available seats in the specified area
-    const [rows] = await pool.query(
-      `
-      SELECT s.id, s.seat_num
-      FROM seats s
-      JOIN seating_rows r ON s.row_id = r.id
-      JOIN sections sec ON r.section_id = sec.id
-      WHERE sec.section_name = ?
-      AND s.status = 'vacant'
-      LIMIT ?
-    `,
-      [area, quantity]
+    const [seats] = await pool.query(
+      `SELECT seats.id, seats.seat_num AS number, seating_rows.row_num AS row_num, sections.price
+      FROM seats
+      JOIN seating_rows ON seats.row_id = seating_rows.id
+      JOIN sections ON seating_rows.section_id = sections.id
+      WHERE sections.section_name = ?
+      AND seats.status = 'vacant'
+      LIMIT ?`,
+      [area, quantityNumber]
     );
 
+    console.log("Seats:", seats);
+
     // Check if there are enough available seats
-    if (rows.length >= quantity) {
+    if (seats.length >= quantityNumber) {
       res.json({
         available: true,
-        seats: rows,
+        seats: seats.map((seat) => ({
+          row: seat.row_num, // Correct field name to match SQL query
+          number: seat.number,
+          price: seat.price,
+        })),
+        price: seats.length > 0 ? seats[0].price : 0,
       });
     } else {
       res.json({
