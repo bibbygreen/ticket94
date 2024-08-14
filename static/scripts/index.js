@@ -209,6 +209,9 @@ function renderEvents(events) {
   events.forEach((event) => {
     const eventBox = document.createElement("div");
     eventBox.classList.add("event-box");
+    eventBox.addEventListener("click", () => {
+      window.location.href = `/event/${event.id}`;
+    });
 
     if (event.category) {
       eventBox.classList.add(event.category); // Add category class

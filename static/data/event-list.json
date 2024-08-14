@@ -8,7 +8,8 @@
     "location": "TICC台北國際會議中心",
     "address": "台北市信義區信義路五段一號",
     "organizer": "SHOW Office Entertainment.co.ltd",
-    "onSale": "2024/08/17 (六) 11:00",
+    "saleTime": "2024/08/17 (六) 11:00",
+    "onSale": "True",
     "price": "座席A區 $3000、座席B區 $3000、座席C區 $2500、座席D區 $2500",
     "pic": "https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg",
     "category":"popular"
@@ -21,7 +22,8 @@
     "location": "TICC台北國際會議中心",
     "address": "台北市信義區信義路五段一號",
     "organizer": "LUK FACTORY",
-    "onSale": "2024年8月12日（星期一）中午12點",
+    "saleTime": "2024年8月12日（星期一）中午12點",
+    "onSale": "False",
     "price": "座席A區 $3000、座席B區 $3000、座席C區 $2500、座席D區 $2500",
     "pic": "https://t.kfs.io/upload_images/208649/%E6%A6%AE%E5%AE%B0-KKTIX%E4%B9%9D%E5%AE%AE%E6%A0%BC-1200X630-0731_large.jpg",
     "category":"upcoming"
@@ -34,7 +36,8 @@
     "location": "Legacy MAX",
     "address": "",
     "organizer": "米珞安影業製作有限公司、龍英投資",
-    "onSale": "2024/08/17（SAT）12:00 PM",
+    "saleTime": "2024/08/17（SAT）12:00 PM",
+    "onSale": "False",
     "price": "座席A區 $3000、座席B區 $3000、座席C區 $2500、座席D區 $2500",
     "pic": "https://static.ticketplus.com.tw/event/6caf2e825b3a28546ef6c43537790fd4/picBigActiveMain_1722879110538.jpeg",
     "category":"popular"
@@ -47,7 +50,8 @@
     "location": "台北國際會議中心 (TICC)",
     "address": "台北市信義區信義路五段一號",
     "organizer": "遠雄創藝",
-    "onSale": "2024/08/11（日）12:00 PM",
+    "saleTime": "2024/08/11（日）12:00 PM",
+    "onSale": "False",
     "price": "座席A區 $3000、座席B區 $3000、座席C區 $2500、座席D區 $2500",
     "pic": "https://t.kfs.io/organization_resource_files/39749/63768/1200x630.jpg",
     "category":"upcoming"

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
-// Function to generate a JWT
+
 const generateToken = (user) => {
   return jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
     expiresIn: "1h",
@@ -11,7 +11,11 @@ const generateToken = (user) => {
 
 // Function to verify a JWT
 const verifyToken = (token) => {
-  return jwt.verify(token, SECRET_KEY);
+  try {
+    return jwt.verify(token, SECRET_KEY);
+  } catch (error) {
+    throw new Error("Invalid or expired token");
+  }
 };
 
 module.exports = { generateToken, verifyToken };

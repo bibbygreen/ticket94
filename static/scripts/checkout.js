@@ -1,10 +1,9 @@
 import { getCookie, saveSelectionToCookie } from "./cookieUtils.js";
+import { fetchMemberData } from "./userApi.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   function checkAvailableSeats(area, quantity) {
     const quantityNumber = Number(quantity);
-
-    // console.log({ area, quantityNumber });
 
     fetch("/api/check-seats", {
       method: "POST",
@@ -30,7 +29,16 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // checkAvailableSeats("B", 4);
+  fetchMemberData()
+    .then((user) => {
+      document.getElementById("member-name").textContent = user.name;
+      document.getElementById("member-email").textContent = user.email;
+      document.getElementById("member-phone").textContent = user.phone;
+    })
+    .catch((error) => {
+      console.error("Error fetching user data:", error);
+      // Handle error, e.g., show a message to the user
+    });
 
   function displaySummaryTable(area, quantity, seats, pricePerTicket) {
     console.log(area);

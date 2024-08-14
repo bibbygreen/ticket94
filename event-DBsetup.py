@@ -40,17 +40,32 @@ url = "static/data/event-list.json"
 with open(url, 'r', encoding='utf-8') as file:
     data = json.load(file)
 
-for i in range(len(data['results'])):
-    description=data['results'][i]["description"]
-    eventName=data['results'][i]["eventName"]
-    date=data['results'][i]["date"]
-    time=data['results'][i]["Time"]
-    location=data['results'][i]["location"]
-    address=data['results'][i]["address"]
-    organizer=data['results'][i]["organizer"]
-    onSale=data['results'][i]["onSale"]
-    price=data['results'][i]["price"]
-    pic=data['results'][i]["pic"]
-    category=data['results'][i]["category"]
+for item in data['results']:
+    description = item["description"]
+    eventName = item["eventName"]
+    date = item["date"]
+    time = item["Time"]
+    location = item["location"]
+    address = item["address"]
+    organizer = item["organizer"]
+    saleTime = item["saleTime"]
+    onSale = item["onSale"] == "True"  # Convert string to boolean: "True" -> True, others -> False
+    price = item["price"]
+    pic = item["pic"]
+    category = item["category"]
+
+# for i in range(len(data['results'])):
+#     description=data['results'][i]["description"]
+#     eventName=data['results'][i]["eventName"]
+#     date=data['results'][i]["date"]
+#     time=data['results'][i]["Time"]
+#     location=data['results'][i]["location"]
+#     address=data['results'][i]["address"]
+#     organizer=data['results'][i]["organizer"]
+#     saleTime=data['results'][i]["saleTime"]
+#     onSale=data['results'][i]["onSale"]
+#     price=data['results'][i]["price"]
+#     pic=data['results'][i]["pic"]
+#     category=data['results'][i]["category"]
   
-    execute_query("INSERT INTO event_lists (description, eventName, date, time, location, address, organizer, onSale, price, pic, category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",(description, eventName, date, time, location, address, organizer, onSale, price, pic, category))
+    execute_query("INSERT INTO event_lists (description, eventName, date, time, location, address, organizer, saleTime, onSale, price, pic, category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",(description, eventName, date, time, location, address, organizer, saleTime, onSale, price, pic, category))

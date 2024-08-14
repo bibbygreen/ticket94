@@ -33,7 +33,7 @@ router.post("/check-seats", async (req, res) => {
       res.json({
         available: true,
         seats: seats.map((seat) => ({
-          row: seat.row_num, // Correct field name to match SQL query
+          row: seat.row_num,
           number: seat.number,
           price: seat.price,
         })),

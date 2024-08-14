@@ -15,6 +15,7 @@ export async function verifyUserSignInToken() {
 // Function to handle modal operations
 export function handleModal() {
   const modal = document.getElementById("myModal");
+  const closeBtn = document.getElementsByClassName("close")[0];
   const navSignIn = document.getElementById("signin-signup");
   const signInForm = document.getElementById("signInForm");
   const signUpForm = document.getElementById("signUpForm");
@@ -47,7 +48,7 @@ export function handleModal() {
     if (event.target === modal) closeModal();
   };
 
-  document.getElementsByClassName("close")[0].onclick = closeModal;
+  closeBtn.onclick = closeModal;
 
   switchToSignUp.onclick = () => {
     signInForm.classList.remove("active");
@@ -78,7 +79,7 @@ export function checkUserSignInStatus() {
         navSignIn.textContent = "會員中心";
         navSignIn.onclick = handleSignOut;
       } else {
-        navSignIn.textContent = "登入/註冊";
+        navSignIn.textContent = "會員登入";
         navSignIn.onclick = () =>
           (document.getElementById("myModal").style.display = "block");
       }
@@ -86,7 +87,7 @@ export function checkUserSignInStatus() {
     .catch((error) => {
       console.error(error);
       localStorage.removeItem("token");
-      document.getElementById("signin-signup").textContent = "登入/註冊";
+      document.getElementById("signin-signup").textContent = "會員登入";
       document.getElementById("signin-signup").onclick = () =>
         (document.getElementById("myModal").style.display = "block");
     });
@@ -106,6 +107,7 @@ export function handleForms({
     const data = {
       name: formData.get("name"),
       email: formData.get("email"),
+      phone: formData.get("phone"),
       password: formData.get("password"),
     };
 
@@ -156,6 +158,22 @@ export function handleForms({
         signInError.textContent = error.message;
       });
   });
+}
+
+export async function fetchMemberData() {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No token available");
+
+  const response = await fetch("/api/user/auth", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) throw new Error("Failed to fetch member data");
+
+  const data = await response.json();
+  console.log(data); // Check the structure of data here
+  return data;
 }
 
 // Initialize the sign-in and sign-up functionality

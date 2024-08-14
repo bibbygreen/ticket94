@@ -6,6 +6,8 @@
     <title>Checkout</title>
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/checkout.css">
+    <link rel="stylesheet" href="/css/progress.css">
+    <link rel="stylesheet" href="/css/event-profile.css">
 </head>
 <body>
   <header>
@@ -26,10 +28,41 @@
     <div class="container">
       <section class="progress-bar">
         <div class="progress-step">選擇票區</div>
-        <div class="progress-step active">選擇座位</div>
-        <div class="progress-step">確認資料</div>
+        <div class="progress-step active">確認資料</div>
         <div class="progress-step">付款結帳</div>
+        <div class="progress-step">購票完成</div>
       </section>
+
+      <section class="event-profile">
+        <div class="event-image">
+          <img src="https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg" alt="Event Image">
+        </div>
+        <div class="event-details">
+          <h2>2024 THE LAST FAN-CON [CURTAIN CALL] IN TAIPEI</h2>
+          <p>Date: 2024年09月14日 (六)</p>
+          <p>Time: 18:00</p>
+          <p>Location: TICC台北國際會議中心</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>訂購人資料</h2>
+        <table id="member-table" class="member-profile-text">
+          <tr>
+            <td class="table-title">會員姓名</td>
+            <td id="member-name"></td>
+          </tr>
+          <tr>
+            <td class="table-title">電子郵件</td>
+            <td id="member-email"></td>
+          </tr>
+          <tr>
+            <td class="table-title">連絡電話</td>
+            <td id="member-phone"></td>
+          </tr>
+        </table>
+      </section>
+
       <section id="summary-container">
         <!-- Summary table will be inserted here -->
       </section>
@@ -42,6 +75,10 @@
     </div>
   </main>
 
+  <footer class="footer">
+    <div class="footer-text">- ticket just for fun -</div>
+  </footer>
+  
   <script type="module" src="/scripts/checkout.js"></script>
 </body>
 </html>

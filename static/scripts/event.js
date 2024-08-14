@@ -1,3 +1,11 @@
+import {
+  handleModal,
+  handleSignOut,
+  verifyUserSignInToken,
+  checkUserSignInStatus,
+  handleForms,
+} from "./userApi.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab");
   const tabContents = document.querySelectorAll(".tab-content");
@@ -5,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to handle tab click
   const handleTabClick = (event) => {
-    // Remove active class from all tabs and contents
     tabs.forEach((tab) => tab.classList.remove("active"));
     tabContents.forEach((content) => content.classList.remove("active"));
 
@@ -55,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error: header elements not found");
       return;
     }
-    // Update header with event data
     eventTitle.textContent = data.eventName;
     headerImg.src = data.pic;
     headerImg.alt = data.eventName;
@@ -83,7 +89,11 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${data.date}</td>
           <td>${data.time}</td>
           <td>${data.location}</td>
-          <td><button class="buy-button">立即購買</button></td>
+          <td>${
+            data.onSale
+              ? '<button class="buy-button">立即購買</button>'
+              : "尚未開賣"
+          }</td>
         </tr>
       </tbody>
     </table>
@@ -91,9 +101,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update "活動介紹" tab content
     tabContentIntroduction.innerHTML = `
-    <h2>活動介紹</h2>
-    <p>${data.description}</p>
-  `;
+      <h2>活動介紹</h2>
+      <p>${data.description}
+      <br><br><br><br>
+      活動名稱｜${data.eventName}<br><br>
+      日期｜${data.date}<br><br>
+      入場時間｜${data.time}<br><br>
+      地點｜${data.location}<br><br>
+      地址｜${data.address}<br><br>
+      主辦單位｜${data.organizer}<br><br>
+      啟售｜${data.onSale}<br><br>
+      票價｜${data.price}<br><br>
+      </p>
+    `;
   }
 
   // Function to highlight the active tab based on scroll position
@@ -115,13 +135,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  const buyButton = document.querySelector(".buy-button");
-  if (buyButton) {
-    buyButton.addEventListener("click", function () {
-      // Redirect to 'area.html'
-      window.location.href = "area.html"; /////////////
-    });
+  async function handleBuyButtonClick() {
+    try {
+      const userStatus = await verifyUserSignInToken();
+      if (userStatus) {
+        window.location.href = "http://localhost:8001/area.html";
+      } else {
+        // Show modal if user is not signed in
+        document.getElementById("myModal").style.display = "block";
+      }
+    } catch (error) {
+      console.error("Error checking user sign-in status:", error);
+      // Optionally handle error (e.g., show an error message to the user)
+    }
   }
+  // Add event listener to all buy buttons
+  document.addEventListener("click", function (event) {
+    if (event.target && event.target.classList.contains("buy-button")) {
+      handleBuyButtonClick();
+    }
+  });
 
   // Add scroll event listener to update active tab
   window.addEventListener("scroll", updateActiveTabOnScroll);

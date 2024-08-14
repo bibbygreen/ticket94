@@ -24,7 +24,6 @@ const getEvents = async (req, res) => {
 
 const getEventById = async (req, res) => {
   try {
-    console.log("Fetching event with ID:", req.params.id); // Log the ID
     const { id } = req.params; // Get the event ID from the URL parameters
     const result = await eventModel.getEventById(id);
 

@@ -57,7 +57,7 @@ header{
 .modal {
   display: none;
   position: fixed;
-  z-index: 1;
+  z-index: 100;
   left: 0;
   top: 0;
   width: 100%;
@@ -395,6 +395,7 @@ header{
   margin-right: 7px;
   margin-left: 7px;
   margin-top: 20px;
+  cursor: pointer;
 }
 
 .event-box img {
@@ -415,22 +416,6 @@ header{
 .event-box.inactive {
   display: none; /* Hide inactive events */
 }
-
-
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 104px;
-  background-color: #C0A3C1;
-}
-.footer-text {
-  color: #542168;
-  font-weight: bold;
-  text-align: center;
-  font-size: 22px;
-}
-
 
 
 @media (min-width: 351px) and (max-width: 450px) {

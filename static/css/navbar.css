@@ -6,13 +6,16 @@ header{
   justify-content: center;
   border-bottom: 1px solid #E8E8E8;
 }
+
 .navbar-container{
+  position: fixed;
   width: 100%;
   height: 50px;
   line-height: 50px;
   display: flex;
   justify-content: space-between;
-  background: #C0A3C1
+  background: #C0A3C1;
+  z-index: 100;
 }
 .navbar{
   width: 1200px; 
@@ -39,4 +42,19 @@ header{
   font-size: 18px;
   cursor: pointer;
   color: #542168;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 104px;
+  background-color: #C0A3C1;
+  margin-top: 30px;
+}
+.footer-text {
+  color: #542168;
+  font-weight: bold;
+  text-align: center;
+  font-size: 22px;
 }

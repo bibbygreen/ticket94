@@ -4,14 +4,14 @@ const { generateToken, verifyToken } = require("../utils/tokenUtils");
 
 // Sign Up
 exports.signUp = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, phone, password } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !phone || !password) {
     return res.status(400).json({ error: "資料欄位填寫有誤或留白" });
   }
 
   try {
-    await userModel.createUser(name, email, password);
+    await userModel.createUser(name, email, phone, password);
     res.status(201).json({ message: "註冊成功" });
   } catch (error) {
     console.error("註冊時發生錯誤：", error);

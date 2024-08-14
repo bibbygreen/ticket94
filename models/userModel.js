@@ -2,12 +2,12 @@ const promisePool = require("../config/dbConfig");
 const bcrypt = require("bcryptjs");
 
 // Sign Up
-exports.createUser = async (name, email, password) => {
+exports.createUser = async (name, email, phone, password) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await promisePool.query(
-      "INSERT INTO members (name, email, password) VALUES (?, ?, ?)",
-      [name, email, hashedPassword]
+      "INSERT INTO members (name, email, phone, password) VALUES (?, ?, ?, ?)",
+      [name, email, phone, hashedPassword]
     );
     return result;
   } catch (error) {
@@ -15,7 +15,6 @@ exports.createUser = async (name, email, password) => {
   }
 };
 
-// Find User by Email
 exports.findUserByEmail = async (email) => {
   try {
     const [rows] = await promisePool.query(
@@ -28,11 +27,10 @@ exports.findUserByEmail = async (email) => {
   }
 };
 
-// Get User Info
 exports.getUserInfoByEmail = async (email) => {
   try {
     const [rows] = await promisePool.query(
-      "SELECT id, name, email FROM members WHERE email = ?",
+      "SELECT id, name, email, phone FROM members WHERE email = ?",
       [email]
     );
     return rows;

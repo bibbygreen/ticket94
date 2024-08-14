@@ -1,5 +1,5 @@
 /* General Styles */
-body {
+* {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -11,21 +11,26 @@ body {
 }
 
 .header-img {
-  width: 100%;
+  width: 80%;
   height: auto;
+  max-height: 500px;
+  margin: auto;
+  padding-top: 140px;
+  object-fit: contain;
+  object-position: center;
 }
 
-header {
+/* header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   background-color: #fff;
   border-bottom: 1px solid #ddd;
-  z-index: 1000; /* Ensure it is above other content */
+  z-index: 1000;
   padding: 10px 0;
   text-align: center;
-}
+} */
 
 .event-title {
   margin: 0;
@@ -36,7 +41,7 @@ header {
 
 .tabs {
   position: fixed;
-  top: 60px; /* Adjust based on the height of the event title */
+  top: 50px;
   left: 0;
   right: 0;
   background-color: #fff;
