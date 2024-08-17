@@ -111,6 +111,7 @@ const tem_images = [
   "https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg",
   "https://t.kfs.io/upload_images/208325/IMG_0654_medium.jpeg",
   "https://t.kfs.io/upload_images/208106/GI_1200x630_medium.jpg",
+  "https://www.legacy.com.tw/uploads/image_library/1469005927.jpg",
   "https://t.kfs.io/upload_images/207432/__G_I-DLE_MAIN-POSTER-1200x630_medium.jpg",
 ];
 
@@ -181,7 +182,7 @@ let nextPage = null;
 let isFetching = false;
 
 async function fetchEvents(page) {
-  const url = encodeURI(`http://localhost:8001/api/events?page=${page}`);
+  const url = encodeURI(`/api/events?page=${page}`);
   isFetching = true;
 
   try {
