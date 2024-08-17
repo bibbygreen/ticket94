@@ -67,36 +67,51 @@ tfoot td {
   border-top: 2px solid #ddd;
 }
 
-.payment-methods {
-  margin-top: 20px;
+.tpfield {
+  height: 40px;
+  width: 200px;
+  border: 1px solid #CCCCCC;
+  margin: 5px 0;
+  padding: 7px;
+  border-radius: 5px;
+}
+
+.credit-card-info{
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
   margin-bottom: 30px;
-  padding: 10px;
-  border: 1px solid #ddd;
+}
+
+.credit-card-info-container{
+  width: 1000px;
+  margin: 10px 10px;
+}
+
+.credit-card-info-title{
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.credit-card-info-container input{
+  width: 200px;
+  height: 40px;
+  padding: 7px;
+  border: 1px solid #CCCCCC;
   border-radius: 5px;
 }
 
-.payment-methods h2 {
-  margin-top: 10px;
+.credit-card-info-box{
+  display: flex;
+  vertical-align: middle;
 }
-
-.payment-option {
-  margin-bottom: 10px;
-}
-
-.payment-option input {
-  margin-right: 10px;
-}
-
-.payment-description {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-}
-
-.payment-description p {
-  margin: 0;
+.credit-card-info-box p{
+  height: 30px;
+  vertical-align: middle;
+  margin-top: 12px;
 }
 
 .div-button{

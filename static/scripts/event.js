@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update "活動介紹" tab content
     tabContentIntroduction.innerHTML = `
       <h2>活動介紹</h2>
+      <br>
       <p>${data.description}
       <br><br><br><br>
       活動名稱｜${data.eventName}<br><br>

@@ -68,12 +68,41 @@
   margin-bottom: 10px;
 }
 
+/* .selection-options{
+  display: flex;
+  justify-content: center;
+} */
+.selection-options {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center horizontally */
+  gap: 10px; /* Space between items (optional) */
+}
+
+.selection-options label {
+  display: block;
+  align-items: center; /* Vertically center the radio button and text */
+}
+
+.selection-options{
+  text-align: center;
+}
+
 .ticket-options{
   text-align: center;
 }
 
 .ticket-options h2{
   margin-bottom: 20px;
+}
+
+.selection-label{
+  display: flex;
+}
+
+.selection-label label{
+  margin-right: 25px;
+  font-size: 18px;
 }
 
 .ticket-options label {
@@ -87,6 +116,33 @@
   width: 60px;
   height: 30px;
   margin-bottom: 20px;
+}
+
+#seat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+.seat {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin: 2px;
+  text-align: center;
+  line-height: 30px;
+  border: 1px solid #ccc;
+  cursor: pointer; /* Add cursor style */
+}
+
+.seat.selected {
+  background-color: blue;
+  color: white;
 }
 
 .confirm-button {

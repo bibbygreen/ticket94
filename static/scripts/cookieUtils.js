@@ -20,20 +20,70 @@ export function getCookie(name) {
   return null;
 }
 
-// Function to save user selection to cookies
-export function saveSelectionToCookie(area, quantity, price) {
-  const selection = { area: area, quantity: quantity, price: price };
-  setCookie("userSelection", JSON.stringify(selection), 30);
+// Function to save selection to a cookie
+// export function saveSelectionToCookie(
+//   area,
+//   quantity,
+//   pricePerTicket,
+//   selectedSeats
+// ) {
+//   // Ensure selectedSeats is an array
+//   if (!Array.isArray(selectedSeats)) {
+//     console.error("Selected seats should be an array.");
+//     selectedSeats = []; // Default to empty array if not an array
+//   }
+
+//   // Assuming that we are saving a JSON string to the cookie
+//   const selection = {
+//     area,
+//     quantity,
+//     pricePerTicket,
+//     seats: selectedSeats, // Save selected seats as an array
+//   };
+
+//   // Save to cookie (assuming a function setCookie exists)
+//   setCookie("userSelection", JSON.stringify(selection), 1); // Expires in 1 day
+// }
+
+// Function to save selection to cookie
+export function saveSelectionToCookie(
+  areaName,
+  quantity,
+  selectedSeats,
+  price
+) {
+  // Save user selection
+  setCookie(
+    "userSelection",
+    JSON.stringify({
+      area: areaName,
+      quantity: quantity,
+      price: price,
+    }),
+    30
+  );
+
+  // Save detailed seat selection
+  const seatData = selectedSeats.map((seat) => ({
+    row: seat.row,
+    number: seat.seat,
+  }));
+  setCookie("seatSelection", JSON.stringify(seatData), 30);
 }
 
-// Function to load and display user selection from cookies
+// Function to load selection from cookie
 export function loadSelectionFromCookie() {
-  const selection = getCookie("userSelection");
-  if (selection) {
-    const { area, quantity, price } = JSON.parse(selection);
-    // Display the stored selection if needed
-    console.log("Selected Area:", area);
-    console.log("Number of Tickets:", quantity);
-    console.log("Price per Ticket:", price);
+  const userSelection = getCookie("userSelection");
+  const seatSelection = getCookie("seatSelection");
+
+  if (userSelection) {
+    const { area, quantity, price } = JSON.parse(userSelection);
+    console.log("User Selection:", { area, quantity, price });
+  }
+
+  if (seatSelection) {
+    const seats = JSON.parse(seatSelection);
+    console.log("Seat Selection:", seats);
+    // Handle the loaded seat selection if needed
   }
 }
