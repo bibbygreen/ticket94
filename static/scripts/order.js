@@ -74,44 +74,13 @@ async function onSubmitOrder(event) {
     }
 
     const prime = result.card.prime;
-    const contactName = document.getElementById("contact-name-input").value;
-    const contactEmail = document.getElementById("contact-email-input").value;
-    const contactPhone = document.getElementById("contact-phone-input").value;
-    const bookingAttractionName = document.querySelector(
-      ".booking-attraction-name"
-    ).textContent;
-    const bookingDate = document
-      .querySelector(".booking-date")
-      .textContent.split("：")[1];
-    const bookingTimeText = document
-      .querySelector(".booking-time")
-      .textContent.split("：")[1];
-    const bookingFee = document
-      .querySelector(".booking-fee")
-      .textContent.split("：")[1];
-    const bookingAttractionAddress = document
-      .querySelector(".booking-attraction-address")
-      .textContent.split("：")[1];
-    const bookingAttractionImage = document
-      .querySelector(".attraction-img img")
-      .getAttribute("src");
+    const contactName = document.getElementById("member-name").value;
+    const contactEmail = document.getElementById("member-email").value;
+    const contactPhone = document.getElementById("member-phone").value;
 
-    const bookingTime =
-      bookingTimeText === "上午九點至下午二點" ? "morning" : "afternoon";
     const orderData = {
       prime: prime,
       order: {
-        price: parseInt(bookingFee),
-        trip: {
-          attraction: {
-            // id: attractionId,
-            name: bookingAttractionName,
-            address: bookingAttractionAddress,
-            image: bookingAttractionImage,
-          },
-          date: bookingDate,
-          time: bookingTime,
-        },
         contact: {
           name: contactName,
           email: contactEmail,
@@ -139,7 +108,7 @@ async function onSubmitOrder(event) {
       })
       .then((data) => {
         if (data.data.payment.status === 1) {
-          window.location.href = `/thankyou?number=${data.data.number}`;
+          window.location.href = `/finish?number=${data.data.number}`;
         } else {
           alert("交易失敗，敬請重新訂購");
           window.location.href = "/";

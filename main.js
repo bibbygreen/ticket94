@@ -12,15 +12,17 @@ app.use(bodyParser.json()); // For parsing JSON bodies
 
 // Import routes
 const userRoutes = require("./routes/userRoutes");
-const checkSeatsRoutes = require("./routes/checkSeatsRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const areaRoutes = require("./routes/areaRoutes");
+const seatRoutes = require("./routes/seatRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 // Use routes
 app.use("/api/user", userRoutes);
-app.use("/api", checkSeatsRoutes);
 app.use("/", eventRoutes);
 app.use("/api", areaRoutes);
+app.use("/api", seatRoutes);
+app.use("/api", orderRoutes);
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");
@@ -33,9 +35,6 @@ app.get("/event/:id", function (req, res) {
 app.get("/area/:id", function (req, res) {
   res.sendFile(__dirname + "/static/area.html");
 });
-// app.get("/member", function (req, res) {
-//   res.sendFile(__dirname + "/static/index.html");
-// });
 
 app.get("/error", function (req, res) {
   res.send("something wrong");
