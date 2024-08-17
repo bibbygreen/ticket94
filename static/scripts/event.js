@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   tabs.forEach((tab) => tab.addEventListener("click", handleTabClick));
 
   async function fetchEvent(eventId) {
-    const url = `http://localhost:8001/api/event/${eventId}`;
+    const url = `/api/event/${eventId}`;
     try {
       const response = await fetch(url, { method: "GET" });
 
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const userStatus = await verifyUserSignInToken();
       if (userStatus) {
-        window.location.href = "http://localhost:8001/area.html";
+        window.location.href = "area.html";
       } else {
         // Show modal if user is not signed in
         document.getElementById("myModal").style.display = "block";
@@ -162,12 +162,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Extract attraction ID from URL
   const href = location.href;
-  const pattern = /^http:.+\/event\/(\d+)$/;
+  const pattern = /^https?:\/\/.+\/event\/(\d+)/;
   const match = href.match(pattern);
   if (match) {
     const eventId = match[1];
     fetchEvent(eventId);
   } else {
-    console.error("Invalid URL format. Unable to extract attraction ID.");
+    console.error("Invalid URL format. Unable to extract event ID.");
   }
 });

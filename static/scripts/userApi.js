@@ -178,6 +178,12 @@ export async function fetchMemberData() {
 
 // Initialize the sign-in and sign-up functionality
 document.addEventListener("DOMContentLoaded", () => {
+  const headlineElement = document.querySelector(".headline");
+
+  headlineElement.addEventListener("click", () => {
+    window.location.href = "/";
+  });
+
   const { signInForm, signUpForm, signInError, signUpError, signUpSuccess } =
     handleModal();
   handleForms({
