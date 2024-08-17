@@ -1,11 +1,19 @@
 import json
+import os
 import mysql.connector.pooling
 
+# con = {
+#     "user": "root",
+#     "password": "root",
+#     "host": "localhost",
+#     "database": "ticket94"
+# }
+
 con = {
-    "user": "root",
-    "password": "root",
-    "host": "localhost",
-    "database": "ticket94"
+    "user": os.getenv("DB_USER", "root"),
+    "password": os.getenv("DB_PASSWORD", "root"),
+    "host": os.getenv("DB_HOST", "localhost"),
+    "database": os.getenv("DB_NAME", "ticket94")
 }
 
 connection_pool = mysql.connector.pooling.MySQLConnectionPool(
