@@ -66,10 +66,6 @@ function displaySummaryTable(seats) {
       <tbody>
         ${seatRows}
         <tr>
-          <td colspan="3" style="text-align: right;">訂購張數</td>
-          <td style="color:blue">${totalTicket} 張</td>
-        </tr>
-        <tr>
           <td colspan="3" style="text-align: right;">總金額</td>
           <td  id="amount" style="color:red">${totalPrice} 元</td>
         </tr>
