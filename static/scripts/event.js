@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const userStatus = await verifyUserSignInToken();
       if (userStatus) {
-        window.location.href = "area.html";
+        window.location.href = "/area.html";
       } else {
         // Show modal if user is not signed in
         document.getElementById("myModal").style.display = "block";

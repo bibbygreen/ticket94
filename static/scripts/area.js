@@ -73,20 +73,38 @@ function displayTicketOptions(areaId, price) {
     });
 }
 
-async function fetchAvailableSeats(areaId, numSeats) {
-  const response = await fetch("/api/select-seats", {
+async function fetchAvailableSeats(area, quantity) {
+  const response = await fetch("/api/check-seats", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sectionId: areaId, numSeats }),
+    body: JSON.stringify({ area, quantity }),
   });
   if (!response.ok) throw new Error("Failed to fetch available seats.");
   const data = await response.json();
-  return data.availableSeats;
+  console.log("Fetched Seats:", data);
+  return data;
 }
 
-async function autoSelectSeats(areaId, numSeats) {
-  const availableSeats = await fetchAvailableSeats(areaId, numSeats);
-  const seatIds = availableSeats.map((seat) => seat.id);
+async function autoSelectSeats(area, quantity) {
+  const data = await fetchAvailableSeats(area, quantity);
+  console.log("Fetched Data:", data); // Log the full data including area and seats
+
+  if (!data.available || data.seats.length === 0) {
+    alert("No seats available");
+    return;
+  }
+
+  // Assuming each seat object has 'id', 'row', 'number', and 'price'
+  const seatDetails = data.seats.map((seat) => ({
+    id: seat.id,
+    row: seat.row,
+    number: seat.number,
+    price: seat.price,
+    area: data.area,
+  }));
+  console.log("Seat Details to hold:", seatDetails); // Log full seat details
+
+  const seatIds = seatDetails.map((seat) => seat.id);
 
   try {
     const response = await fetch("/api/hold-seats", {
@@ -97,7 +115,7 @@ async function autoSelectSeats(areaId, numSeats) {
 
     if (response.ok) {
       // Store the held seats in sessionStorage to retrieve in checkout
-      sessionStorage.setItem("selectedSeats", JSON.stringify(seatIds));
+      sessionStorage.setItem("selectedSeats", JSON.stringify(seatDetails));
       window.location.href = "checkout.html";
     } else {
       const errorData = await response.json();
@@ -108,6 +126,42 @@ async function autoSelectSeats(areaId, numSeats) {
     alert("Error holding seats: " + error.message);
   }
 }
+
+// async function fetchAvailableSeats(areaId, numSeats) {
+//   const response = await fetch("/api/check-seats", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ sectionId: areaId, numSeats }),
+//   });
+//   if (!response.ok) throw new Error("Failed to fetch available seats.");
+//   const data = await response.json();
+//   return data.availableSeats;
+// }
+
+// async function autoSelectSeats(areaId, numSeats) {
+//   const availableSeats = await fetchAvailableSeats(areaId, numSeats);
+//   const seatIds = availableSeats.map((seat) => seat.id);
+
+//   try {
+//     const response = await fetch("/api/hold-seats", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ seatIds }),
+//     });
+
+//     if (response.ok) {
+//       // Store the held seats in sessionStorage to retrieve in checkout
+//       sessionStorage.setItem("selectedSeats", JSON.stringify(seatIds));
+//       window.location.href = "checkout.html";
+//     } else {
+//       const errorData = await response.json();
+//       throw new Error(errorData.error || "Failed to hold seats.");
+//     }
+//   } catch (error) {
+//     console.error("Error holding seats:", error);
+//     alert("Error holding seats: " + error.message);
+//   }
+// }
 
 async function holdSeat(seatId) {
   const response = await fetch("/api/hold-seats", {
@@ -143,10 +197,12 @@ function showSeatDiagramModal(quantity, price) {
   modalContent.style.overflowY = "auto"; // Add vertical scrollbar if needed
 
   modalContent.innerHTML = `
-  <h2>↑↑↑座位面向↑↑↑</h2>
-  <h2>所選擇區域 ${selectedAreaName}區</h2>
-  <button class="close-modal">關閉</button>
-  <button class="seat-confirm-button">確認選位</button>
+  <div style="text-align: center; margin-bottom: 10px">
+    <h2>↑↑↑座位面向↑↑↑</h2>
+    <h2>所選擇區域 ${selectedAreaName}區</h2>
+    <button class="close-modal">關閉</button>
+    <button class="seat-confirm-button">確認選位</button>
+  </div>
   <div id="seat-container">${createSeatDiagram()}</div>
 `;
 
