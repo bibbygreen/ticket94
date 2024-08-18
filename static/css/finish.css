@@ -4,3 +4,15 @@
   margin: 0;
   padding: 0;
 }
+body{
+  height: 100%;
+}
+
+#summary-container{
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+.main-content {
+  flex: 1; 
+}

@@ -71,13 +71,13 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     if (selectedPaymentMethod) {
       const paymentMethod = selectedPaymentMethod.value;
-      const orderNumber = generateOrderNumber();
-      localStorage.setItem("orderNumber", orderNumber);
 
       if (paymentMethod === "credit-card") {
-        // window.location.href = `/booking.html`;
-        window.location.href = `/finish.html?orderNumber=${orderNumber}`;
+        window.location.href = `/booking.html`;
+        // window.location.href = `/finish.html?orderNumber=${orderNumber}`;
       } else if (paymentMethod === "ibon") {
+        const orderNumber = generateOrderNumber();
+        localStorage.setItem("orderNumber", orderNumber);
         const ibonNumber = generateIbonNumber();
         localStorage.setItem("ibonNumber", ibonNumber);
         window.location.href = `/finish.html?orderNumber=${orderNumber}`;

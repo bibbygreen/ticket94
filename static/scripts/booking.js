@@ -1,11 +1,5 @@
 import { fetchMemberData } from "./userApi.js";
 
-function generateIbonNumber() {
-  return Math.floor(
-    1000000000000000 + Math.random() * 9000000000000000
-  ).toString();
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   // Retrieve and display the seat data from session storage
   const seatData = JSON.parse(sessionStorage.getItem("selectedSeats"));
@@ -28,11 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   const previousButton = document.getElementById("previous-button");
+  const cancelButton = document.querySelector(".cancel-button");
   if (previousButton) {
     previousButton.addEventListener("click", () => {
-      window.location.href = "area.html"; // Change this to the correct URL if necessary
+      window.location.href = "/area.html"; // Change this to the correct URL if necessary
     });
   }
+  cancelButton.addEventListener("click", function () {
+    window.location.href = "/";
+  });
 });
 
 function displaySummaryTable(seats) {
@@ -56,9 +54,6 @@ function displaySummaryTable(seats) {
 
   document.getElementById("summary-container").innerHTML = `
     <h2>訂單資料</h2>
-    <p>訂單編號：<span id="order-number">${
-      orderNumber ? orderNumber : "N/A"
-    }</span></p>
     <table>
       <thead>
         <tr>
@@ -71,8 +66,12 @@ function displaySummaryTable(seats) {
       <tbody>
         ${seatRows}
         <tr>
+          <td colspan="3" style="text-align: right;">訂購張數</td>
+          <td style="color:blue">${totalTicket} 張</td>
+        </tr>
+        <tr>
           <td colspan="3" style="text-align: right;">總金額</td>
-          <td style="color:red">${totalPrice} 元</td>
+          <td  id="amount" style="color:red">${totalPrice} 元</td>
         </tr>
       </tbody>
     </table>

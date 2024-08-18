@@ -1,4 +1,12 @@
 // Utility function to verify user sign-in token
+export function verifyToken(token) {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    throw new Error("Invalid token");
+  }
+}
+
 export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
   if (token) {

@@ -70,22 +70,39 @@ async function onSubmitOrder(event) {
   TPDirect.card.getPrime((result) => {
     if (result.status !== 0) {
       alert("Failed to get prime. Error: " + result.msg);
+      console.error("Failed to get prime:", result);
       return;
     }
 
     const prime = result.card.prime;
-    const contactName = document.getElementById("member-name").value;
-    const contactEmail = document.getElementById("member-email").value;
-    const contactPhone = document.getElementById("member-phone").value;
+
+    const contactName = document.getElementById("member-name").textContent;
+    const contactEmail = document.getElementById("member-email").textContent;
+    const contactPhone = document.getElementById("member-phone").textContent;
+
+    if (!contactName || !contactEmail || !contactPhone) {
+      alert("Missing cardholder information");
+      return;
+    }
+
+    const amountText = document.getElementById("amount").textContent;
+    const amount = parseInt(amountText.replace(/[^\d]/g, ""), 10);
+
+    if (isNaN(amount)) {
+      alert("Invalid amount value");
+      return;
+    }
+    // const contactName = document.getElementById("member-name").value;
+    // const contactEmail = document.getElementById("member-email").value;
+    // const contactPhone = document.getElementById("member-phone").value;
 
     const orderData = {
       prime: prime,
-      order: {
-        contact: {
-          name: contactName,
-          email: contactEmail,
-          phone: contactPhone,
-        },
+      amount: amount, // Assuming amount is correctly retrieved as discussed earlier
+      cardholder: {
+        name: contactName,
+        email: contactEmail,
+        phone_number: contactPhone,
       },
     };
 
@@ -98,6 +115,7 @@ async function onSubmitOrder(event) {
       body: JSON.stringify(orderData),
     })
       .then((response) => {
+        console.log("Response status:", response.status);
         if (!response.ok) {
           return response.json().then((error) => {
             console.error("Error response from server:", error); // Log the error response
@@ -107,8 +125,9 @@ async function onSubmitOrder(event) {
         return response.json();
       })
       .then((data) => {
+        console.log("Response data:", data);
         if (data.data.payment.status === 1) {
-          window.location.href = `/finish?number=${data.data.number}`;
+          window.location.href = `/finish.html?orderNumber=${data.data.number}`;
         } else {
           alert("交易失敗，敬請重新訂購");
           window.location.href = "/";
@@ -130,16 +149,3 @@ document.head.appendChild(script);
 
 // Execute setup function
 script.onload = setupTPDirectSDK;
-
-async function fetchOrderData(orderNumber) {
-  const response = await fetch(`/api/order/${orderNumber}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to fetch ordered data");
-  }
-  return await response.json();
-}
