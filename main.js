@@ -6,7 +6,8 @@ require("dotenv").config();
 // 建立Application 物件
 const app = express();
 
-app.use(express.static("static"));
+// app.use(express.static("static"));
+app.use(express.static(__dirname + "/static"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); // For parsing JSON bodies
 
@@ -36,6 +37,14 @@ app.get("/event/:id", function (req, res) {
 
 app.get("/area/:id", function (req, res) {
   res.sendFile(__dirname + "/static/area.html");
+});
+
+app.get("/checkout/:id", function (req, res) {
+  res.sendFile(__dirname + "/static/checkout.html");
+});
+
+app.get("/booking/:id", function (req, res) {
+  res.sendFile(__dirname + "/static/booking.html");
 });
 
 app.get("/error", function (req, res) {

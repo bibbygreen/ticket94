@@ -6,11 +6,23 @@ import {
   handleForms,
 } from "./userApi.js";
 
+let eventId;
 let selectedAreaName = "";
 let selectedAreaPrice = 0;
 const ticketOptionsContainer = document.getElementById("ticket-options");
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Extract attraction ID from URL
+  const href = location.href;
+  // const pattern = /^https?:\/\/.+\/event\/(\d+)/;
+  const pattern = /\/area\/(\d+)/;
+  const match = href.match(pattern);
+  if (match) {
+    eventId = match[1];
+  } else {
+    console.error("Invalid URL format. Unable to extract event ID.");
+  }
+
   const areas = document.querySelectorAll(".area");
 
   areas.forEach((area) => {
@@ -116,7 +128,8 @@ async function autoSelectSeats(area, quantity) {
     if (response.ok) {
       // Store the held seats in sessionStorage to retrieve in checkout
       sessionStorage.setItem("selectedSeats", JSON.stringify(seatDetails));
-      window.location.href = "checkout.html";
+      // window.location.href = "checkout.html";
+      window.location.href = `/checkout/${eventId}`;
     } else {
       const errorData = await response.json();
       throw new Error(errorData.error || "Failed to hold seats.");
@@ -126,42 +139,6 @@ async function autoSelectSeats(area, quantity) {
     alert("Error holding seats: " + error.message);
   }
 }
-
-// async function fetchAvailableSeats(areaId, numSeats) {
-//   const response = await fetch("/api/check-seats", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ sectionId: areaId, numSeats }),
-//   });
-//   if (!response.ok) throw new Error("Failed to fetch available seats.");
-//   const data = await response.json();
-//   return data.availableSeats;
-// }
-
-// async function autoSelectSeats(areaId, numSeats) {
-//   const availableSeats = await fetchAvailableSeats(areaId, numSeats);
-//   const seatIds = availableSeats.map((seat) => seat.id);
-
-//   try {
-//     const response = await fetch("/api/hold-seats", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ seatIds }),
-//     });
-
-//     if (response.ok) {
-//       // Store the held seats in sessionStorage to retrieve in checkout
-//       sessionStorage.setItem("selectedSeats", JSON.stringify(seatIds));
-//       window.location.href = "checkout.html";
-//     } else {
-//       const errorData = await response.json();
-//       throw new Error(errorData.error || "Failed to hold seats.");
-//     }
-//   } catch (error) {
-//     console.error("Error holding seats:", error);
-//     alert("Error holding seats: " + error.message);
-//   }
-// }
 
 async function holdSeat(seatId) {
   const response = await fetch("/api/hold-seats", {
@@ -277,71 +254,3 @@ function createSeatDiagram() {
 
   return diagram;
 }
-
-//   function handleSeatSelection(seatElement) {
-//   const selected = seatElement.classList.contains("selected");
-//   const seatId = seatElement.dataset.seatId;
-
-//   if (!selected) {
-//     holdSeat(seatId)
-//       .then(() => {
-//         seatElement.classList.add("selected");
-//         seatElement.style.backgroundColor = "blue";
-//         seatElement.style.color = "white";
-//       })
-//       .catch((error) => {
-//         console.error("Error holding seat:", error);
-//         alert("Failed to hold the seat.");
-//       });
-//   } else {
-//     releaseSeat(seatId)
-//       .then(() => {
-//         seatElement.classList.remove("selected");
-//         seatElement.style.backgroundColor = "";
-//         seatElement.style.color = "";
-//       })
-//       .catch((error) => {
-//         console.error("Error releasing seat:", error);
-//         alert("Failed to release the seat.");
-//       });
-//   }
-// }
-
-// function handleSeatSelection(seatElement) {
-//   const selectedSeats = document.querySelectorAll(".seat.selected");
-//   const maxSeats = Number(document.getElementById("ticket-quantity").value);
-
-//   if (
-//     selectedSeats.length >= maxSeats &&
-//     !seatElement.classList.contains("selected")
-//   ) {
-//     alert("已選擇最大數量的座位");
-//     return;
-//   }
-
-//   if (seatElement.classList.contains("selected")) {
-//     // If the seat is already selected and user clicks again, release it
-//     releaseSeat(seatElement.dataset.seatId)
-//       .then(() => {
-//         seatElement.classList.remove("selected");
-//         seatElement.style.backgroundColor = "";
-//         seatElement.style.color = "";
-//       })
-//       .catch((error) => {
-//         console.error("Failed to release seat:", error);
-//         alert("Failed to release the seat.");
-//       });
-//   } else {
-//     // Hold the seat when selected
-//     reserveSeat(seatElement.dataset.seatId)
-//       .then(() => {
-//         seatElement.classList.add("selected");
-//         seatElement.style.backgroundColor = "blue";
-//         seatElement.style.color = "white";
-//       })
-//       .catch((error) => {
-//         console.error("Failed to hold seat:", error);
-//         alert("Failed to hold the seat.");
-//       });
-//   }
-// }

@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function displaySummaryTable(seats) {
     let totalPrice = 0;
+
     const seatRows = seats
       .map((seat) => {
         const price = Number(seat.price);

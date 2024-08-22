@@ -1,19 +1,19 @@
 const mysql = require("mysql2");
 
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: 3306,
-});
 // const connection = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "root",
-//   database: "ticket94",
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
 //   port: 3306,
 // });
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "ticket94",
+  port: 3306,
+});
 
 // Connect to the database
 connection.connect((err) => {
@@ -27,7 +27,11 @@ function createTables() {
       CREATE TABLE IF NOT EXISTS sections (
           id INT AUTO_INCREMENT PRIMARY KEY,
           section_name CHAR(10) NOT NULL,
-          price INT NOT NULL
+          price INT NOT NULL,
+          event_id BIGINT NOT NULL,  -- 添加 event_id 作為外鍵
+          FOREIGN KEY (event_id) REFERENCES event_lists(id)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE
       );
   `;
 
@@ -48,11 +52,15 @@ function createTables() {
         seat_num VARCHAR(10) NOT NULL,
         status ENUM('V', 'T', 'R') NOT NULL DEFAULT 'V',
         row_id INT NOT NULL,
+        member_id BIGINT NULL,  -- 修正為引用 members 表的 id
         hold_expires_at DATETIME NULL, 
         FOREIGN KEY (row_id) REFERENCES seating_rows(id)
-              ON DELETE CASCADE
-              ON UPDATE CASCADE
-      );
+          ON DELETE CASCADE
+          ON UPDATE CASCADE,
+        FOREIGN KEY (member_id) REFERENCES members(id) 
+          ON DELETE SET NULL
+          ON UPDATE CASCADE
+);
   `;
 
   // Execute table creation queries in sequence
@@ -82,18 +90,18 @@ function createTables() {
 async function insertData() {
   try {
     const sections = [
-      { name: "A", price: 3000 },
-      { name: "B", price: 3000 },
-      { name: "C", price: 2500 },
-      { name: "D", price: 2500 },
+      { name: "A", price: 3000, eventId: 1 }, // 示例：eventId 設為 1
+      { name: "B", price: 3000, eventId: 1 },
+      { name: "C", price: 2500, eventId: 1 },
+      { name: "D", price: 2500, eventId: 1 },
     ];
 
     const sectionIds = await Promise.all(
-      sections.map(({ name, price }) => {
+      sections.map(({ name, price, eventId }) => {
         return new Promise((resolve, reject) => {
           connection.query(
-            "INSERT INTO sections (section_name, price) VALUES (?, ?)",
-            [name, price],
+            "INSERT INTO sections (section_name, price, event_id) VALUES (?, ?, ?)",
+            [name, price, eventId],
             (err, results) => {
               if (err) return reject(err);
               resolve(results.insertId);

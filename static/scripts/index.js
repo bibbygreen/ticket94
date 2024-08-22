@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     signUpError,
     signUpSuccess,
   });
-  checkUserSignInStatus();
+  // checkUserSignInStatus();
 });
 
 document.getElementById("show-all").addEventListener("click", function () {

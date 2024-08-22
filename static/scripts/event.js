@@ -11,6 +11,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabContents = document.querySelectorAll(".tab-content");
   const navbarHeight = document.querySelector(".tabs").offsetHeight;
 
+  let eventId;
+
+  // Extract attraction ID from URL
+  const href = location.href;
+  // const pattern = /^https?:\/\/.+\/event\/(\d+)/;
+  const pattern = /\/event\/(\d+)/;
+  const match = href.match(pattern);
+  if (match) {
+    eventId = match[1];
+    console.log("Extracted eventId:", eventId);
+    fetchEvent(eventId);
+  } else {
+    console.error("Invalid URL format. Unable to extract event ID.");
+  }
+
   // Function to handle tab click
   const handleTabClick = (event) => {
     tabs.forEach((tab) => tab.classList.remove("active"));
@@ -35,8 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add click event listener to each tab
   tabs.forEach((tab) => tab.addEventListener("click", handleTabClick));
 
-  async function fetchEvent(eventId) {
-    const url = `/api/event/${eventId}`;
+  async function fetchEvent(id) {
+    const url = `/api/event/${id}`;
     try {
       const response = await fetch(url, { method: "GET" });
 
@@ -111,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
       地點｜${data.location}<br><br>
       地址｜${data.address}<br><br>
       主辦單位｜${data.organizer}<br><br>
-      啟售｜${data.onSale}<br><br>
+      啟售｜${data.saleTime}<br><br>
       票價｜${data.price}<br><br>
       </p>
     `;
@@ -140,7 +155,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const userStatus = await verifyUserSignInToken();
       if (userStatus) {
-        window.location.href = "/area.html";
+        console.log("Navigating to area page with eventId:", eventId); ////
+        window.location.href = `/area/${eventId}`;
       } else {
         // Show modal if user is not signed in
         document.getElementById("myModal").style.display = "block";
@@ -159,15 +175,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Add scroll event listener to update active tab
   window.addEventListener("scroll", updateActiveTabOnScroll);
-
-  // Extract attraction ID from URL
-  const href = location.href;
-  const pattern = /^https?:\/\/.+\/event\/(\d+)/;
-  const match = href.match(pattern);
-  if (match) {
-    const eventId = match[1];
-    fetchEvent(eventId);
-  } else {
-    console.error("Invalid URL format. Unable to extract event ID.");
-  }
 });

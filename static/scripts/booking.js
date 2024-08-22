@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function displaySummaryTable(seats) {
   let totalPrice = 0;
+  let totalTicket = seats.length;
   const seatRows = seats
     .map((seat) => {
       totalPrice += seat.price;
@@ -65,6 +66,10 @@ function displaySummaryTable(seats) {
       </thead>
       <tbody>
         ${seatRows}
+        <tr>
+          <td colspan="3" style="text-align: right;">訂購張數</td>
+          <td style="color:blue">${totalTicket} 張</td>
+        </tr>
         <tr>
           <td colspan="3" style="text-align: right;">總金額</td>
           <td  id="amount" style="color:red">${totalPrice} 元</td>
