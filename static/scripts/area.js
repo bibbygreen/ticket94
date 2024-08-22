@@ -5,7 +5,6 @@ import {
   checkUserSignInStatus,
   handleForms,
 } from "./userApi.js";
-
 let eventId;
 let selectedAreaName = "";
 let selectedAreaPrice = 0;
@@ -20,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (match) {
     eventId = match[1];
   } else {
-    console.error("Invalid URL format. Unable to extract event ID.");
+    console.error("Invalid URL format. Unable to extract area ID.");
   }
 
   const areas = document.querySelectorAll(".area");
@@ -82,13 +81,17 @@ function displayTicketOptions(areaId, price) {
       } else if (optionValue === "auto") {
         autoSelectSeats(selectedAreaName, quantity);
       }
-    });
-}
+    }); //document.querySelector(".confirm-button")
+} //function displayTicketOptions
 
 async function fetchAvailableSeats(area, quantity) {
+  const token = localStorage.getItem("token");
   const response = await fetch("/api/check-seats", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ area, quantity }),
   });
   if (!response.ok) throw new Error("Failed to fetch available seats.");
@@ -119,16 +122,17 @@ async function autoSelectSeats(area, quantity) {
   const seatIds = seatDetails.map((seat) => seat.id);
 
   try {
+    const token = localStorage.getItem("token");
     const response = await fetch("/api/hold-seats", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ seatIds }),
     });
 
     if (response.ok) {
-      // Store the held seats in sessionStorage to retrieve in checkout
-      sessionStorage.setItem("selectedSeats", JSON.stringify(seatDetails));
-      // window.location.href = "checkout.html";
       window.location.href = `/checkout/${eventId}`;
     } else {
       const errorData = await response.json();
@@ -140,14 +144,14 @@ async function autoSelectSeats(area, quantity) {
   }
 }
 
-async function holdSeat(seatId) {
-  const response = await fetch("/api/hold-seats", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ seatIds: [seatId] }),
-  });
-  if (!response.ok) throw new Error("Failed to hold seat.");
-}
+// async function holdSeat(seatId) {
+//   const response = await fetch("/api/hold-seats", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ seatIds: [seatId] }),
+//   });
+//   if (!response.ok) throw new Error("Failed to hold seat.");
+// }
 
 function showSeatDiagramModal(quantity, price) {
   const modal = document.createElement("div");
@@ -188,15 +192,36 @@ function showSeatDiagramModal(quantity, price) {
     .addEventListener("click", async () => {
       const selectedSeats = document.querySelectorAll(".seat.selected");
       const seatData = Array.from(selectedSeats).map((seat) => ({
+        id: seat.id,
         area: selectedAreaName,
         row: seat.dataset.row,
         number: seat.dataset.seat,
         price: selectedAreaPrice,
       }));
-      sessionStorage.setItem("selectedSeats", JSON.stringify(seatData));
-      modal.style.display = "none";
-      window.location.href = "checkout.html";
-    });
+
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch("/api/hold-seats", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ seatIds: seatData.map((seat) => seat.id) }),
+        });
+
+        if (response.ok) {
+          modal.style.display = "none";
+          window.location.href = `/checkout/${eventId}`;
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to hold seats.");
+        }
+      } catch (error) {
+        console.error("Error holding seats:", error);
+        alert("Error holding seats: " + error.message);
+      }
+    }); //modalContent.querySelector(".seat-confirm-button").addEventListener
 
   const closeButton = modalContent.querySelector(".close-modal");
   closeButton.addEventListener("click", () => {

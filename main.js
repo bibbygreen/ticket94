@@ -17,7 +17,6 @@ const eventRoutes = require("./routes/eventRoutes");
 const areaRoutes = require("./routes/areaRoutes");
 const seatRoutes = require("./routes/seatRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-const checkSeatsRoutes = require("./routes/checkSeatsRoutes");
 
 // Use routes
 app.use("/api/user", userRoutes);
@@ -25,7 +24,6 @@ app.use("/", eventRoutes);
 app.use("/api", areaRoutes);
 app.use("/api", seatRoutes);
 app.use("/api", orderRoutes);
-app.use("/api", checkSeatsRoutes);
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");

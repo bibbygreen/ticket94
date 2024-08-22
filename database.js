@@ -52,7 +52,7 @@ function createTables() {
         seat_num VARCHAR(10) NOT NULL,
         status ENUM('V', 'T', 'R') NOT NULL DEFAULT 'V',
         row_id INT NOT NULL,
-        member_id BIGINT NULL,  -- 修正為引用 members 表的 id
+        member_id BIGINT NULL,
         hold_expires_at DATETIME NULL, 
         FOREIGN KEY (row_id) REFERENCES seating_rows(id)
           ON DELETE CASCADE

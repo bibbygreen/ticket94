@@ -9,15 +9,23 @@ export function verifyToken(token) {
 
 export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
+  console.log("Token:", token);
   if (token) {
-    const response = await fetch("/api/user/auth", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) throw new Error("Token verification failed");
-    return await response.json();
+    try {
+      const response = await fetch("/api/user/auth", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        console.error("Server response:", await response.text()); // 打印伺服器響應內容
+        throw new Error("Token verification failed");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error during token verification:", error);
+      throw error; // 重新拋出錯誤，以便在上層捕獲
+    }
   }
-  return null;
 }
 
 // Function to handle modal operations
