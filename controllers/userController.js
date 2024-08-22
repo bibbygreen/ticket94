@@ -50,22 +50,20 @@ exports.signIn = async (req, res) => {
 };
 
 // New Get User Info
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers && req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res
-      .status(401)
-      .json({ error: "Authorization token is missing or invalid." });
-  }
-
-  const token = authHeader.split(" ")[1];
-
+exports.getUserInfo = async (req, res) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
+    // 直接使用 req.user，這是 verifyToken 中間件解碼後存入的用戶信息
+    const email = req.user.email;
+    const rows = await userModel.getUserInfoByEmail(email);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "查無使用者帳號" });
+    }
+
+    const user = rows[0];
+    res.status(200).json(user);
   } catch (error) {
-    return res.status(401).json({ error: "Invalid or expired token." });
+    console.error("錯誤", error);
+    res.status(500).json({ error: "伺服器發生錯誤" });
   }
 };

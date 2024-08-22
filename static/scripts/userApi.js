@@ -9,7 +9,6 @@ export function verifyToken(token) {
 
 export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
-  console.log("Token:", token);
   if (token) {
     try {
       const response = await fetch("/api/user/auth", {
@@ -17,13 +16,13 @@ export async function verifyUserSignInToken() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
-        console.error("Server response:", await response.text()); // 打印伺服器響應內容
+        console.error("Server response:", await response.text());
         throw new Error("Token verification failed");
       }
       return await response.json();
     } catch (error) {
       console.error("Error during token verification:", error);
-      throw error; // 重新拋出錯誤，以便在上層捕獲
+      throw error;
     }
   }
 }
