@@ -11,14 +11,33 @@ function generateIbonNumber() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Fetch seat data stored in session storage
-  const seatData = JSON.parse(sessionStorage.getItem("selectedSeats"));
-  if (seatData && seatData.length > 0) {
-    displaySummaryTable(seatData);
-  } else {
-    document.getElementById("summary-container").innerHTML =
-      "<p>No selection found.</p>";
-  }
+  fetch("/api/locked-seats", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch locked seats.");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const seatData = data.seats;
+      if (seatData && seatData.length > 0) {
+        displaySummaryTable(seatData);
+      } else {
+        document.getElementById("summary-container").innerHTML =
+          "<p>No selection found.</p>";
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching locked seats:", error);
+      document.getElementById("summary-container").innerHTML =
+        "<p>Error fetching seat data.</p>";
+    });
 
   function displaySummaryTable(seats) {
     let totalPrice = 0;
@@ -29,8 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
         totalPrice += price;
         return `
         <tr>
-          <td>${seat.area}區</td>
-          <td>${seat.row}排${seat.number}號</td>
+          <td>${seat.section_name}區</td>
+          <td>${seat.row_num}排${seat.number}號</td>
           <td>全票</td>
           <td>${seat.price}元</td>
         </tr>
@@ -90,10 +109,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const previousButton = document.getElementById("previous-button");
+  const previousButton = document.getElementById("cancel-button");
   if (previousButton) {
     previousButton.addEventListener("click", () => {
-      window.location.href = "area.html";
+      window.location.href = "/";
     });
   }
 });

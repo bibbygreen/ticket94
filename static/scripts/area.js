@@ -8,35 +8,9 @@ import {
 let eventId;
 let selectedAreaName = "";
 let selectedAreaPrice = 0;
+let selectedSeatsData = []; //for seatDiagram
+
 const ticketOptionsContainer = document.getElementById("ticket-options");
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Extract attraction ID from URL
-  const href = location.href;
-  // const pattern = /^https?:\/\/.+\/event\/(\d+)/;
-  const pattern = /\/area\/(\d+)/;
-  const match = href.match(pattern);
-  if (match) {
-    eventId = match[1];
-  } else {
-    console.error("Invalid URL format. Unable to extract area ID.");
-  }
-
-  const areas = document.querySelectorAll(".area");
-
-  areas.forEach((area) => {
-    area.addEventListener("click", () => {
-      selectedAreaName = area.getAttribute("data-area");
-      selectedAreaPrice = parseInt(
-        area.querySelector(".area-price").textContent.replace(/\D/g, ""),
-        10
-      );
-      displayTicketOptions(selectedAreaName, selectedAreaPrice);
-      areas.forEach((a) => a.classList.remove("selected"));
-      area.classList.add("selected");
-    });
-  });
-});
 
 function displayTicketOptions(areaId, price) {
   ticketOptionsContainer.innerHTML = `
@@ -73,10 +47,10 @@ function displayTicketOptions(areaId, price) {
       const optionValue = selectedOption.value;
 
       if (optionValue === "manual") {
-        const availableSeats = await fetchAvailableSeats(
-          selectedAreaName,
-          quantity
-        );
+        // const availableSeats = await fetchAvailableSeats(
+        //   selectedAreaName,
+        //   quantity
+        // );
         showSeatDiagramModal(quantity, selectedAreaPrice);
       } else if (optionValue === "auto") {
         autoSelectSeats(selectedAreaName, quantity);
@@ -96,7 +70,6 @@ async function fetchAvailableSeats(area, quantity) {
   });
   if (!response.ok) throw new Error("Failed to fetch available seats.");
   const data = await response.json();
-  console.log("Fetched Seats:", data);
   return data;
 }
 
@@ -153,29 +126,26 @@ async function autoSelectSeats(area, quantity) {
 //   if (!response.ok) throw new Error("Failed to hold seat.");
 // }
 
+function saveSelectedSeatsToLocalStorage(seatData) {
+  selectedSeatsData = seatData; // 更新全域變數
+  localStorage.setItem("selectedSeatsData", JSON.stringify(selectedSeatsData));
+}
+
+function loadSelectedSeatsFromLocalStorage() {
+  const storedSeats = localStorage.getItem("selectedSeatsData");
+  if (storedSeats) {
+    selectedSeatsData = JSON.parse(storedSeats);
+  }
+}
+
 function showSeatDiagramModal(quantity, price) {
+  loadSelectedSeatsFromLocalStorage();
+
   const modal = document.createElement("div");
   modal.id = "seat-diagram-modal";
-  modal.style.position = "fixed";
-  modal.style.top = "0";
-  modal.style.left = "0";
-  modal.style.width = "100%";
-  modal.style.height = "100%";
-  modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-  modal.style.display = "flex";
-  modal.style.justifyContent = "center";
-  modal.style.alignItems = "center";
-  modal.style.zIndex = "1000";
 
   const modalContent = document.createElement("div");
-  modalContent.style.backgroundColor = "#fff";
-  modalContent.style.padding = "20px";
-  modalContent.style.borderRadius = "5px";
-  modalContent.style.position = "relative";
-  modalContent.style.width = "80%";
-  modalContent.style.maxWidth = "800px";
-  modalContent.style.maxHeight = "80vh";
-  modalContent.style.overflowY = "auto"; // Add vertical scrollbar if needed
+  modalContent.classList.add("seat-diagram-content");
 
   modalContent.innerHTML = `
   <div style="text-align: center; margin-bottom: 10px">
@@ -187,27 +157,53 @@ function showSeatDiagramModal(quantity, price) {
   <div id="seat-container">${createSeatDiagram()}</div>
 `;
 
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+
   modalContent
     .querySelector(".seat-confirm-button")
     .addEventListener("click", async () => {
       const selectedSeats = document.querySelectorAll(".seat.selected");
       const seatData = Array.from(selectedSeats).map((seat) => ({
-        id: seat.id,
         area: selectedAreaName,
         row: seat.dataset.row,
         number: seat.dataset.seat,
         price: selectedAreaPrice,
       }));
 
+      saveSelectedSeatsToLocalStorage(seatData);
+
+      console.log("Generated seatData:", seatData); //////
+
       try {
         const token = localStorage.getItem("token");
+
+        const responseGetIds = await fetch("/api/get-seat-ids", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            area: selectedAreaName,
+            seats: seatData,
+          }),
+        });
+
+        if (!responseGetIds.ok) {
+          throw new Error("Failed to get seat IDs.");
+        }
+
+        const { seatIds } = await responseGetIds.json();
+        console.log("Seat IDs:", seatIds); //
+
         const response = await fetch("/api/hold-seats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ seatIds: seatData.map((seat) => seat.id) }),
+          body: JSON.stringify({ seatIds }),
         });
 
         if (response.ok) {
@@ -223,19 +219,36 @@ function showSeatDiagramModal(quantity, price) {
       }
     }); //modalContent.querySelector(".seat-confirm-button").addEventListener
 
-  const closeButton = modalContent.querySelector(".close-modal");
-  closeButton.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-
-  modal.appendChild(modalContent);
-  document.body.appendChild(modal);
   document.querySelectorAll(".seat").forEach((seat) => {
+    const isSelected = selectedSeatsData.some(
+      (selected) =>
+        selected.row === seat.dataset.row &&
+        selected.number === seat.dataset.seat
+    );
+    if (isSelected) {
+      seat.classList.add("selected");
+      seat.style.backgroundColor = "blue";
+      seat.style.color = "white";
+    }
+
     seat.addEventListener("click", () => {
       handleSeatSelection(seat);
     });
+
+    const closeButton = modalContent.querySelector(".close-modal");
+    closeButton.addEventListener("click", () => {
+      modal.style.display = "none";
+      const selectedSeats = document.querySelectorAll(".seat.selected");
+      const seatData = Array.from(selectedSeats).map((seat) => ({
+        area: selectedAreaName,
+        row: seat.dataset.row,
+        number: seat.dataset.seat,
+        price: selectedAreaPrice,
+      }));
+      saveSelectedSeatsToLocalStorage(seatData);
+    });
   });
-}
+} //function showSeatDiagramModal
 
 function handleSeatSelection(seatElement) {
   const maxSeats = Number(document.getElementById("ticket-quantity").value);
@@ -257,7 +270,18 @@ function handleSeatSelection(seatElement) {
     seatElement.style.backgroundColor = "";
     seatElement.style.color = "";
   }
-}
+
+  // 更新選擇的座位到 localStorage
+  const updatedSeats = Array.from(
+    document.querySelectorAll(".seat.selected")
+  ).map((seat) => ({
+    area: selectedAreaName,
+    row: seat.dataset.row,
+    number: seat.dataset.seat,
+    price: selectedAreaPrice,
+  }));
+  saveSelectedSeatsToLocalStorage(updatedSeats);
+} //function handleSeatSelection
 
 function createSeatDiagram() {
   const rows = 25;
@@ -279,3 +303,33 @@ function createSeatDiagram() {
 
   return diagram;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadSelectedSeatsFromLocalStorage();
+
+  // Extract attraction ID from URL
+  const href = location.href;
+  // const pattern = /^https?:\/\/.+\/event\/(\d+)/;
+  const pattern = /\/area\/(\d+)/;
+  const match = href.match(pattern);
+  if (match) {
+    eventId = match[1];
+  } else {
+    console.error("Invalid URL format. Unable to extract area ID.");
+  }
+
+  const areas = document.querySelectorAll(".area");
+
+  areas.forEach((area) => {
+    area.addEventListener("click", () => {
+      selectedAreaName = area.getAttribute("data-area");
+      selectedAreaPrice = parseInt(
+        area.querySelector(".area-price").textContent.replace(/\D/g, ""),
+        10
+      );
+      displayTicketOptions(selectedAreaName, selectedAreaPrice);
+      areas.forEach((a) => a.classList.remove("selected"));
+      area.classList.add("selected");
+    });
+  });
+});

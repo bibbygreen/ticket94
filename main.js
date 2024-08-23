@@ -2,6 +2,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 require("dotenv").config();
+require("./utils/seatCleaner");
 
 // 建立Application 物件
 const app = express();

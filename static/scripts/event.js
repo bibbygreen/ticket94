@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const match = href.match(pattern);
   if (match) {
     eventId = match[1];
-    console.log("Extracted eventId:", eventId);
     fetchEvent(eventId);
   } else {
     console.error("Invalid URL format. Unable to extract event ID.");
