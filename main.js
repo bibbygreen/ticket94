@@ -1,6 +1,7 @@
 // 載入模組
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 require("dotenv").config();
 require("./utils/seatCleaner");
 
