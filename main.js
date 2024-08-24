@@ -50,7 +50,11 @@ app.get("/checkout/:id", function (req, res) {
   res.sendFile(__dirname + "/static/checkout.html");
 });
 
-app.get("/booking/:id", function (req, res) {
+app.get("/booking", function (req, res) {
+  res.render("booking", {
+    APP_ID: process.env.APP_ID,
+    APP_KEY: process.env.APP_KEY,
+  });
   res.sendFile(__dirname + "/static/booking.html");
 });
 

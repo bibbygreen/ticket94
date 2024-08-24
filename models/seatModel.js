@@ -4,7 +4,7 @@ const db = require("../config/dbConfig");
 exports.checkAvailableSeats = async (area, quantityNumber) => {
   try {
     const [seats] = await db.query(
-      `SELECT seats.id, seats.seat_num AS number, seating_rows.row_num AS row_num, sections.price
+      `SELECT seats.id, seats.seat_num AS number, seating_rows.row_num AS row_num, sections.price, sections.event_id
       FROM seats
       JOIN seating_rows ON seats.row_id = seating_rows.id
       JOIN sections ON seating_rows.section_id = sections.id
@@ -47,7 +47,7 @@ exports.checkSeatsStatus = async (seatIds) => {
 exports.getLockedSeatsByMemberId = async (memberId) => {
   try {
     const sql = `
-      SELECT seats.id, seats.seat_num AS number, seating_rows.row_num AS row_num, sections.section_name, sections.price
+      SELECT seats.id, seats.seat_num AS number, seating_rows.row_num AS row_num, sections.section_name, sections.price, sections.event_id
       FROM seats
       JOIN seating_rows ON seats.row_id = seating_rows.id
       JOIN sections ON seating_rows.section_id = sections.id

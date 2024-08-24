@@ -22,7 +22,7 @@ export async function checkSigninStatus() {
   try {
     const token = localStorage.getItem("token");
     if (!token) {
-      window.location.href = "/"; // 如果沒有token，跳轉回首頁
+      window.location.href = "/";
       return;
     }
 
@@ -39,7 +39,7 @@ export async function checkSigninStatus() {
     console.log("User is logged in:", userData);
   } catch (error) {
     console.error("User not logged in or token invalid:", error);
-    window.location.href = "/"; // 如果token無效，跳轉回首頁
+    window.location.href = "/";
   }
 }
 
@@ -57,6 +57,11 @@ export async function fetchMemberData() {
   const data = await response.json();
   console.log(data); // Check the structure of data here
   return data;
+}
+
+function saveCurrentPageUrl() {
+  const currentUrl = window.location.href;
+  localStorage.setItem("returnUrl", currentUrl);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -87,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
       showToast("您已登出");
       setTimeout(() => {
         window.location.href = "/";
-      }, 3000); // 3秒後跳轉
+      }, 2000);
     });
   } else {
     // 未登入
@@ -126,7 +131,7 @@ if (signInForm) {
         showToast("登入成功！");
         setTimeout(() => {
           window.location.href = "/";
-        }, 3000); // 3秒後跳轉
+        }, 2000);
       } else {
         showToast("登入失敗：" + data.error);
       }
@@ -163,7 +168,7 @@ if (signUpForm) {
         showToast("註冊成功！您現在可以登入");
         setTimeout(() => {
           window.location.href = "/signin";
-        }, 3000); // 3秒後跳轉
+        }, 2000);
       } else {
         showToast("註冊失敗：" + data.error);
       }
@@ -180,5 +185,5 @@ export function showToast(message) {
   toast.className = "toast show";
   setTimeout(() => {
     toast.className = toast.className.replace("show", "");
-  }, 3000); // 3秒後消失
+  }, 2000);
 }

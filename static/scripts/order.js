@@ -68,12 +68,13 @@ async function onSubmitOrder(event) {
   }
 
   TPDirect.card.getPrime((result) => {
+    console.log("result.status: ", result.status);
     if (result.status !== 0) {
-      alert("Failed to get prime. Error: " + result.msg);
+      alert("取得 Prime 錯誤: " + result.msg);
       console.error("Failed to get prime:", result);
       return;
     }
-
+    alert("取得 Prime 成功");
     const prime = result.card.prime;
 
     const contactName = document.getElementById("member-name").textContent;
@@ -92,13 +93,10 @@ async function onSubmitOrder(event) {
       alert("Invalid amount value");
       return;
     }
-    // const contactName = document.getElementById("member-name").value;
-    // const contactEmail = document.getElementById("member-email").value;
-    // const contactPhone = document.getElementById("member-phone").value;
 
     const orderData = {
       prime: prime,
-      amount: amount, // Assuming amount is correctly retrieved as discussed earlier
+      amount: amount,
       cardholder: {
         name: contactName,
         email: contactEmail,
@@ -130,13 +128,13 @@ async function onSubmitOrder(event) {
           window.location.href = `/finish.html?orderNumber=${data.data.number}`;
         } else {
           alert("交易失敗，敬請重新訂購");
-          window.location.href = "/";
+          // window.location.href = "/";
         }
       })
       .catch((error) => {
         console.error("Error:", error);
         alert(`Booking failed. Please try again. Error: ${error.message}`);
-        window.location.href = "/";
+        // window.location.href = "/";
       });
   });
 }
@@ -147,5 +145,5 @@ script.src = "https://js.tappaysdk.com/sdk/tpdirect/v5.14.0";
 script.async = true;
 document.head.appendChild(script);
 
-// Execute setup function
+//Execute setup function
 script.onload = setupTPDirectSDK;

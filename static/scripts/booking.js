@@ -1,14 +1,33 @@
 import { fetchMemberData } from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Retrieve and display the seat data from session storage
-  const seatData = JSON.parse(sessionStorage.getItem("selectedSeats"));
-  if (seatData && seatData.length > 0) {
-    displaySummaryTable(seatData);
-  } else {
-    document.getElementById("summary-container").innerHTML =
-      "<p>No seat selection found.</p>";
-  }
+  fetch("/api/locked-seats", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`, // 使用 token 進行身份驗證
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("無法獲取鎖定的座位資訊。");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const seatData = data.seats;
+      if (seatData && seatData.length > 0) {
+        displaySummaryTable(seatData); // 顯示座位資訊
+      } else {
+        document.getElementById("summary-container").innerHTML =
+          "<p>無座位選擇。</p>";
+      }
+    })
+    .catch((error) => {
+      console.error("獲取鎖定座位時出錯：", error);
+      document.getElementById("summary-container").innerHTML =
+        "<p>獲取座位資訊時發生錯誤。</p>";
+    });
 
   // Fetch and display user data
   fetchMemberData()
@@ -41,17 +60,14 @@ function displaySummaryTable(seats) {
       totalPrice += seat.price;
       return `
       <tr>
-        <td>${seat.area}區</td>
-        <td>${seat.row}排${seat.number}號</td>
+        <td>${seat.section_name}區</td>
+        <td>${seat.row_num}排${seat.number}號</td>
         <td>全票</td>
         <td>${seat.price}元</td>
       </tr>
     `;
     })
     .join("");
-
-  // Get order number from localStorage
-  const orderNumber = localStorage.getItem("orderNumber");
 
   document.getElementById("summary-container").innerHTML = `
     <h2>訂單資料</h2>

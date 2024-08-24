@@ -21,6 +21,7 @@ exports.checkSeats = async (req, res) => {
       response = {
         available: true,
         area: area,
+        event_id: seats.length > 0 ? seats[0].event_id : null,
         seats: seats.map((seat) => ({
           id: seat.id,
           row: seat.row_num,
@@ -92,7 +93,10 @@ exports.getLockedSeats = async (req, res) => {
 
     const lockedSeats = await SeatModel.getLockedSeatsByMemberId(memberId);
 
-    res.json({ seats: lockedSeats });
+    res.json({
+      event_id: lockedSeats.length > 0 ? lockedSeats[0].event_id : null,
+      seats: lockedSeats,
+    });
   } catch (error) {
     console.error("Error fetching locked seats:", error.message);
     res
