@@ -1,4 +1,4 @@
-.modal {
+/* .modal {
   display: none;
   position: fixed;
   z-index: 100;
@@ -20,6 +20,7 @@
   background: linear-gradient(270deg, #611da1 0%, #b4bbf9 100%);
   border: none;
 } */
+ /*
 .modal-content {
   position: relative;
   background-color: #ffffff;
@@ -57,7 +58,7 @@
 .switch-link {
   cursor: pointer;
   text-decoration: none;
-}
+} */
 .form-group {
   margin-bottom: 5px;
   display: flex;
@@ -98,7 +99,7 @@
   font-weight: 500;
   margin: 10px;
 }
-.error-message, .success-message {
+/* .error-message, .success-message {
   margin-top: 10px;
   font-weight: bold;
   text-align: center;
@@ -108,4 +109,4 @@
 }
 .success-message {
   color: green;
-}
+} */

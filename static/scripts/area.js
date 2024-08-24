@@ -1,10 +1,5 @@
-import {
-  handleModal,
-  handleSignOut,
-  verifyUserSignInToken,
-  checkUserSignInStatus,
-  handleForms,
-} from "./userApi.js";
+import { checkSigninStatus } from "./signin-signup.js";
+
 let eventId;
 let selectedAreaName = "";
 let selectedAreaPrice = 0;
@@ -305,6 +300,8 @@ function createSeatDiagram() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  checkSigninStatus();
+
   loadSelectedSeatsFromLocalStorage();
 
   // Extract attraction ID from URL

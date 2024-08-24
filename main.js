@@ -30,6 +30,14 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");
 });
 
+app.get("/signin", (req, res) => {
+  res.sendFile(__dirname + "/static/signin.html");
+});
+
+app.get("/signup", (req, res) => {
+  res.sendFile(__dirname + "/static/signup.html");
+});
+
 app.get("/event/:id", function (req, res) {
   res.sendFile(__dirname + "/static/event.html");
 });

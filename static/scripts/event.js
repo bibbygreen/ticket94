@@ -1,10 +1,4 @@
-import {
-  handleModal,
-  handleSignOut,
-  verifyUserSignInToken,
-  checkUserSignInStatus,
-  handleForms,
-} from "./userApi.js";
+import { verifyUserSignInToken } from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab");
@@ -157,8 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Navigating to area page with eventId:", eventId); ////
         window.location.href = `/area/${eventId}`;
       } else {
-        // Show modal if user is not signed in
-        document.getElementById("myModal").style.display = "block";
+        window.location.href = "/signin";
       }
     } catch (error) {
       console.error("Error checking user sign-in status:", error);

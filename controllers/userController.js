@@ -1,3 +1,4 @@
+//userController
 const userModel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { generateToken, verifyToken } = require("../utils/tokenUtils");
@@ -11,6 +12,18 @@ exports.signUp = async (req, res) => {
   }
 
   try {
+    // 檢查email是否已經存在
+    const existingUser = await userModel.findUserByEmail(email);
+    if (existingUser.length > 0) {
+      return res.status(409).json({ error: "此email帳號已註冊" });
+    }
+
+    // 檢查手機號碼是否已經存在
+    const existingPhone = await userModel.findUserByPhone(phone);
+    if (existingPhone.length > 0) {
+      return res.status(409).json({ error: "此手機號碼已註冊" });
+    }
+
     await userModel.createUser(name, email, phone, password);
     res.status(201).json({ message: "註冊成功" });
   } catch (error) {

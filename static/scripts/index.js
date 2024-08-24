@@ -1,10 +1,3 @@
-import {
-  handleModal,
-  handleSignOut,
-  checkUserSignInStatus,
-  handleForms,
-} from "./userApi.js";
-
 function updateSlider(images) {
   const slide = document.getElementById("slide");
   const dotsContainer = document.querySelector(".dots");
@@ -116,19 +109,6 @@ const tem_images = [
 ];
 
 updateSlider(tem_images);
-
-document.addEventListener("DOMContentLoaded", () => {
-  const { signInForm, signUpForm, signInError, signUpError, signUpSuccess } =
-    handleModal();
-  handleForms({
-    signInForm,
-    signUpForm,
-    signInError,
-    signUpError,
-    signUpSuccess,
-  });
-  // checkUserSignInStatus();
-});
 
 document.getElementById("show-all").addEventListener("click", function () {
   let events = document.querySelectorAll(".event-box");

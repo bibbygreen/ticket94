@@ -1,3 +1,4 @@
+//userModel
 const promisePool = require("../config/dbConfig");
 const bcrypt = require("bcryptjs");
 
@@ -24,6 +25,18 @@ exports.findUserByEmail = async (email) => {
     return rows;
   } catch (error) {
     throw new Error("Error finding user by email: " + error.message);
+  }
+};
+
+exports.findUserByPhone = async (phone) => {
+  try {
+    const [rows] = await promisePool.query(
+      "SELECT * FROM members WHERE phone = ?",
+      [phone]
+    );
+    return rows;
+  } catch (error) {
+    throw new Error("Error finding user by phone: " + error.message);
   }
 };
 

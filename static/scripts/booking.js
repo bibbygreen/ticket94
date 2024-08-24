@@ -1,4 +1,4 @@
-import { fetchMemberData } from "./userApi.js";
+import { fetchMemberData } from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Retrieve and display the seat data from session storage
