@@ -7,6 +7,15 @@ require("./utils/seatCleaner");
 // 建立Application 物件
 const app = express();
 
+// 配置 CORS
+const corsOptions = {
+  origin: "*", // 允許所有來源訪問，根據需要可以修改為特定的域名
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions)); // 使用 cors 中間件
+
 // app.use(express.static("static"));
 app.use(express.static(__dirname + "/static"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -51,10 +60,6 @@ app.get("/checkout/:id", function (req, res) {
 });
 
 app.get("/booking", function (req, res) {
-  res.render("booking", {
-    APP_ID: process.env.APP_ID,
-    APP_KEY: process.env.APP_KEY,
-  });
   res.sendFile(__dirname + "/static/booking.html");
 });
 
