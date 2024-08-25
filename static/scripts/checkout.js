@@ -1,17 +1,8 @@
 import { fetchMemberData } from "./signin-signup.js";
 
-function generateOrderNumber() {
-  return Math.floor(100000000000 + Math.random() * 900000000000).toString();
-}
-
-function generateIbonNumber() {
-  return Math.floor(
-    1000000000000000 + Math.random() * 9000000000000000
-  ).toString();
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   let seatIds = [];
+  let totalPrice = 0;
 
   fetch("/api/locked-seats", {
     method: "GET",
@@ -43,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   function displaySummaryTable(seats) {
-    let totalPrice = 0;
+    totalPrice = 0;
 
     const seatRows = seats
       .map((seat) => {
@@ -95,15 +86,39 @@ document.addEventListener("DOMContentLoaded", () => {
     if (selectedPaymentMethod) {
       const paymentMethod = selectedPaymentMethod.value;
 
-      if (paymentMethod === "credit-card") {
+      if (paymentMethod === "ibon") {
+        const orderData = {
+          seatIds,
+          amount: totalPrice,
+        };
+
+        fetch("/api/orders/ibon", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(orderData),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((error) => {
+                throw new Error(`Order creation failed: ${error.message}`);
+              });
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const orderNumber = data.data.number;
+            const ibonNumber = data.data.ibonNumber;
+            window.location.href = `/finish.html?orderNumber=${orderNumber}`;
+          })
+          .catch((error) => {
+            console.error("Error creating order:", error);
+            alert("Error creating order. Please try again.");
+          });
+      } else if (paymentMethod === "credit-card") {
         window.location.href = `/booking.html`;
-        // window.location.href = `/finish.html?orderNumber=${orderNumber}`;
-      } else if (paymentMethod === "ibon") {
-        const orderNumber = generateOrderNumber();
-        localStorage.setItem("orderNumber", orderNumber);
-        const ibonNumber = generateIbonNumber();
-        localStorage.setItem("ibonNumber", ibonNumber);
-        window.location.href = `/finish.html?orderNumber=${orderNumber}`;
       } else {
         alert("請選擇付款方式。");
       }

@@ -62,9 +62,14 @@ exports.getLockedSeatsByMemberId = async (memberId) => {
 
 exports.getExpiredSeats = async () => {
   const sql = `
-    SELECT id, member_id FROM seats
-    WHERE status = 'T' AND hold_expires_at < NOW()
-  `;
+    UPDATE orders 
+    SET payment_status = 2, payment_message = '逾時繳費，訂單不成立'
+    WHERE order_number IN (
+      SELECT order_number 
+      FROM seats
+      WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
+    )
+  `; //同時更新訂單狀態
   const [seats] = await db.query(sql);
   return seats;
 };
@@ -72,8 +77,8 @@ exports.getExpiredSeats = async () => {
 exports.releaseSeatsByMember = async () => {
   const sql = `
     UPDATE seats
-    SET status = 'V', member_id = NULL, hold_expires_at = NULL
-    WHERE status = 'T' AND hold_expires_at < NOW()
+    SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
+    WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
   `;
   return db.query(sql);
 };
@@ -84,7 +89,7 @@ exports.findSeatIdsByDetails = async (area, seats) => {
     for (const seat of seats) {
       console.log(
         `Querying seat for area: ${area}, row: ${seat.row}, number: ${seat.number}`
-      ); // 調試輸出
+      );
       const sql = `
         SELECT seats.id 
         FROM seats
@@ -100,12 +105,12 @@ exports.findSeatIdsByDetails = async (area, seats) => {
       } else {
         console.error(
           `No seat found for area: ${seat.area}, row: ${seat.row}, number: ${seat.number}`
-        ); // 錯誤情況下的輸出
+        );
       }
     }
     return seatIds;
   } catch (error) {
-    console.error("Database query failed:", error.message); // 詳細打印數據庫錯誤
+    console.error("Database query failed:", error.message);
     throw new Error("Database query failed: " + error.message);
   }
 };
@@ -124,4 +129,21 @@ exports.getSeatsByOrderNumber = async (orderNumber) => {
   } catch (error) {
     throw new Error("Failed to fetch seats: " + error.message);
   }
+};
+
+exports.holdSeatsWithExpiration = (
+  seatIds,
+  memberId,
+  holdExpireAt,
+  orderNumber
+) => {
+  const sql = `
+    UPDATE seats 
+    SET status = 'I',
+        member_id = ?, 
+        hold_expires_at = ?, 
+        order_number = ?
+    WHERE id IN (?) AND status = 'T'
+  `;
+  return db.query(sql, [memberId, holdExpireAt, orderNumber, seatIds]);
 };

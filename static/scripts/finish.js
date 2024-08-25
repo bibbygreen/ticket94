@@ -1,26 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Retrieve ibonNumber from localStorage
-  const ibonNumber = localStorage.getItem("ibonNumber");
-
-  if (ibonNumber) {
-    // Render the ibonNumber
-    const orderDetailsDiv = document.getElementById("order-details");
-    orderDetailsDiv.innerHTML = `
-      <p>您的ibon繳費序號為: <strong style="color:red">${ibonNumber}</strong></p>
-      <p>請於訂單成立1小時內完成付款取票，逾時系統將自動取消本筆訂單</p>
-    `;
-  }
-
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
   }
 
   const orderNumber = getQueryParam("orderNumber");
-  console.log("Fetching seats for order number:", orderNumber);
 
-  // 從後端獲取鎖定的座位資訊
-  fetch(`/api/orders/${orderNumber}/seats`, {
+  fetch(`/api/orders/${orderNumber}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -29,45 +15,55 @@ document.addEventListener("DOMContentLoaded", () => {
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error("無法獲取座位資訊。");
+        throw new Error("Failed to fetch order details.");
       }
       return response.json();
     })
     .then((data) => {
-      const seatData = data.seats;
-      if (seatData && seatData.length > 0) {
-        displaySummaryTable(seatData); // 顯示座位資訊
+      const { order, seats } = data;
+      if (seats && seats.length > 0) {
+        displaySummaryTable(seats, order); // 顯示座位資訊
       } else {
         document.getElementById("summary-container").innerHTML =
-          "<p>無座位選擇。</p>";
+          "<p>No seat selection found.</p>";
+      }
+
+      // 根據付款方式顯示不同的資訊
+      if (order.payment_method === "ibon付款") {
+        displayIbonInfo(
+          order.ibon_number,
+          order.payment_status,
+          order.payment_message
+        );
       }
     })
     .catch((error) => {
-      console.error("獲取座位時出錯：", error);
+      console.error("Error fetching order details:", error);
       document.getElementById("summary-container").innerHTML =
-        "<p>獲取座位資訊時發生錯誤。</p>";
+        "<p>Error fetching order details.</p>";
     });
 
-  function displaySummaryTable(seats) {
-    let totalPrice = 0;
-    let totalTicket = seats.length;
+  function displaySummaryTable(seats, order) {
+    let totalPrice = Math.floor(order.total_price).toLocaleString() || 0;
+    let totalTickets = seats.length;
+
     const seatRows = seats
-      .map((seat) => {
-        totalPrice += seat.price;
-        return `
+      .map(
+        (seat) => `
         <tr>
-          <td>${seat.section_name || seat.area}區</td>
-          <td>${seat.row_num || seat.row}排${seat.number}號</td>
+          <td>${seat.section_name}區</td>
+          <td>${seat.row_num}排${seat.number}號</td>
           <td>全票</td>
           <td>${seat.price}元</td>
         </tr>
-      `;
-      })
+      `
+      )
       .join("");
 
     document.getElementById("summary-container").innerHTML = `
       <h2>訂單資料</h2>
-      <p>訂單編號：<span id="order-number">${orderNumber}</span></p>
+      <p>訂單狀態：<span id="order-status">${order.payment_message}</span></p>
+      <p>訂單編號：<span id="order-number">${order.order_number}</span></p>
       <table>
         <thead>
           <tr>
@@ -80,15 +76,24 @@ document.addEventListener("DOMContentLoaded", () => {
         <tbody>
           ${seatRows}
           <tr>
-            <td colspan="3" style="text-align: right;">訂購張數</td>
-            <td style="color:blue">${totalTicket} 張</td>
-          </tr>
+          <td colspan="3" style="text-align: right;">張數</td>
+          <td id="ticket-count" style="color:blue">${totalTickets} 張</td>
+        </tr>
           <tr>
             <td colspan="3" style="text-align: right;">總金額</td>
             <td id="amount" style="color:red">${totalPrice} 元</td>
           </tr>
         </tbody>
       </table>
+    `;
+  }
+
+  function displayIbonInfo(ibonNumber, paymentStatus, paymentMessage) {
+    const orderDetailsDiv = document.getElementById("order-details");
+    orderDetailsDiv.innerHTML = `
+      <p>您的ibon繳費序號為: <strong style="color:red">${ibonNumber}</strong></p>
+      <p>繳費狀態: ${paymentMessage}</p>
+      <p>請於訂單成立1小時內完成付款取票，逾時系統將自動取消本筆訂單</p>
     `;
   }
 });

@@ -1,3 +1,4 @@
+//orderController.js
 const SeatModel = require("../models/seatModel");
 const OrderModel = require("../models/orderModel");
 
@@ -41,6 +42,7 @@ exports.createOrder = async (req, res) => {
     }
 
     const orderNumber = generateOrderNumber();
+    const ibonNumber = null;
     const paymentMethod = "信用卡";
     let paymentStatus = 0;
     let paymentMessage = "交易失敗";
@@ -78,6 +80,7 @@ exports.createOrder = async (req, res) => {
     const orderId = await OrderModel.createOrder(
       userId,
       orderNumber,
+      ibonNumber,
       paymentStatus,
       paymentMessage,
       amount,
@@ -112,6 +115,77 @@ exports.createOrder = async (req, res) => {
   }
 };
 
+exports.createIbonOrder = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { seatIds, amount } = req.body;
+
+    if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0) {
+      return res
+        .status(400)
+        .json({ error: true, message: "Invalid or missing seat IDs." });
+    }
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+      return res
+        .status(400)
+        .json({ error: true, message: "Invalid amount value" });
+    }
+
+    const orderNumber = generateOrderNumber();
+    const ibonNumber = generateIbonNumber();
+    const paymentMethod = "ibon付款";
+    const paymentStatus = 0;
+    const paymentMessage = "待繳費";
+
+    // 檢查座位狀態並保留座位
+    const heldSeats = await SeatModel.checkSeatsStatus(seatIds);
+    if (heldSeats.length !== seatIds.length) {
+      return res
+        .status(400)
+        .json({ error: "Some seats are no longer available." });
+    }
+
+    // 更新座位狀態為 T，並設定 hold_expire_at
+    const holdExpireAt = new Date(Date.now() + 60 * 60 * 1000); // 當前時間 + 1 小時
+
+    await SeatModel.holdSeatsWithExpiration(
+      seatIds,
+      userId,
+      holdExpireAt,
+      orderNumber
+    );
+
+    // 創建訂單並儲存到資料庫
+    const orderId = await OrderModel.createOrder(
+      userId,
+      orderNumber,
+      ibonNumber,
+      paymentStatus,
+      paymentMessage,
+      amount,
+      paymentMethod
+    );
+
+    res.json({
+      data: {
+        orderId,
+        number: orderNumber,
+        ibonNumber,
+        payment: {
+          status: paymentStatus,
+          message: paymentMessage,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error creating ibon order:", error);
+    res
+      .status(500)
+      .json({ error: true, message: `Unexpected error: ${error.message}` });
+  }
+};
+
 exports.getOrderSeats = async (req, res) => {
   const { orderNumber } = req.params;
   try {
@@ -125,5 +199,27 @@ exports.getOrderSeats = async (req, res) => {
   } catch (error) {
     console.error("Error fetching seats:", error);
     res.status(500).json({ error: true, message: "Failed to fetch seats." });
+  }
+};
+
+exports.getOrderDetails = async (req, res) => {
+  const { orderNumber } = req.params;
+  try {
+    const orderDetails = await OrderModel.getOrderDetails(orderNumber);
+    const seats = await SeatModel.getSeatsByOrderNumber(orderNumber);
+    if (!orderDetails || seats.length === 0) {
+      return res
+        .status(404)
+        .json({ error: true, message: "Order not found or no seats found." });
+    }
+    res.json({
+      order: orderDetails,
+      seats: seats,
+    });
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    res
+      .status(500)
+      .json({ error: true, message: "Failed to fetch order details." });
   }
 };
