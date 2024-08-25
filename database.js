@@ -28,7 +28,7 @@ function createTables() {
           id INT AUTO_INCREMENT PRIMARY KEY,
           section_name CHAR(10) NOT NULL,
           price INT NOT NULL,
-          event_id BIGINT NOT NULL,  -- 添加 event_id 作為外鍵
+          event_id BIGINT NOT NULL,
           FOREIGN KEY (event_id) REFERENCES event_lists(id)
             ON DELETE CASCADE
             ON UPDATE CASCADE
@@ -54,6 +54,7 @@ function createTables() {
         row_id INT NOT NULL,
         member_id BIGINT NULL,
         hold_expires_at DATETIME NULL, 
+        order_number VARCHAR(16) NULL,
         FOREIGN KEY (row_id) REFERENCES seating_rows(id)
           ON DELETE CASCADE
           ON UPDATE CASCADE,

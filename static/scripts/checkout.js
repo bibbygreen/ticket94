@@ -11,6 +11,8 @@ function generateIbonNumber() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  let seatIds = [];
+
   fetch("/api/locked-seats", {
     method: "GET",
     headers: {
@@ -27,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((data) => {
       const seatData = data.seats;
       if (seatData && seatData.length > 0) {
+        seatIds = seatData.map((seat) => seat.id);
         displaySummaryTable(seatData);
       } else {
         document.getElementById("summary-container").innerHTML =

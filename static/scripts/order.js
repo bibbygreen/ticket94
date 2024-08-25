@@ -102,6 +102,7 @@ async function onSubmitOrder(event) {
         email: contactEmail,
         phone_number: contactPhone,
       },
+      seatIds: seatIds,
     };
 
     fetch("/api/orders", {
@@ -125,7 +126,7 @@ async function onSubmitOrder(event) {
       .then((data) => {
         console.log("Response data:", data);
         if (data.data.payment.status === 1) {
-          window.location.href = `/finish.html?orderNumber=${data.data.number}`;
+          // window.location.href = `/finish.html?orderNumber=${data.data.number}`;
         } else {
           alert("交易失敗，敬請重新訂購");
           // window.location.href = "/";

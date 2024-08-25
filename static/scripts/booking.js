@@ -1,6 +1,8 @@
 import { fetchMemberData } from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  let seatIds = [];
+
   fetch("/api/locked-seats", {
     method: "GET",
     headers: {
@@ -17,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((data) => {
       const seatData = data.seats;
       if (seatData && seatData.length > 0) {
+        seatIds = seatData.map((seat) => seat.id);
         displaySummaryTable(seatData); // 顯示座位資訊
       } else {
         document.getElementById("summary-container").innerHTML =
@@ -40,13 +43,13 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error fetching user data:", error);
     });
 
-  const previousButton = document.getElementById("previous-button");
+  // const previousButton = document.getElementById("previous-button");
   const cancelButton = document.querySelector(".cancel-button");
-  if (previousButton) {
-    previousButton.addEventListener("click", () => {
-      window.location.href = "/area.html"; // Change this to the correct URL if necessary
-    });
-  }
+  // if (previousButton) {
+  //   previousButton.addEventListener("click", () => {
+  //     window.location.href = "/area.html";
+  //   });
+  // }
   cancelButton.addEventListener("click", function () {
     window.location.href = "/";
   });

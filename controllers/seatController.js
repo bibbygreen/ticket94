@@ -59,7 +59,7 @@ exports.holdSeats = async (req, res) => {
 
 exports.reserveSeats = async (req, res) => {
   try {
-    const { seatIds } = req.body;
+    const { seatIds, orderNumber } = req.body;
 
     // 在確認前，檢查座位是否為 temporary_hold
     const heldSeats = await SeatModel.checkSeatsStatus(seatIds);
@@ -70,7 +70,7 @@ exports.reserveSeats = async (req, res) => {
         .json({ error: "Some seats are no longer available." });
     }
 
-    await SeatModel.reserveSeats(seatIds);
+    await SeatModel.reserveSeats(seatIds, orderNumber);
     res.send("Seats reserved successfully.");
   } catch (error) {
     res.status(500).json({ error: error.message });

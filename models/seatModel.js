@@ -33,9 +33,9 @@ exports.releaseSeats = (seatIds) => {
   return db.query(sql, [seatIds]);
 };
 
-exports.reserveSeats = (seatIds) => {
-  const sql = `UPDATE seats SET status = 'R', hold_expires_at = NULL WHERE id IN (?) AND status = 'T'`;
-  return db.query(sql, [seatIds]);
+exports.reserveSeats = (seatIds, orderNumber) => {
+  const sql = `UPDATE seats SET status = 'R', hold_expires_at = NULL, order_number = ? WHERE id IN (?) AND status = 'T'`;
+  return db.query(sql, [orderNumber, seatIds]);
 };
 
 exports.checkSeatsStatus = async (seatIds) => {
@@ -107,5 +107,21 @@ exports.findSeatIdsByDetails = async (area, seats) => {
   } catch (error) {
     console.error("Database query failed:", error.message); // 詳細打印數據庫錯誤
     throw new Error("Database query failed: " + error.message);
+  }
+};
+
+exports.getSeatsByOrderNumber = async (orderNumber) => {
+  const sql = `
+    SELECT sections.section_name, seating_rows.row_num, seats.seat_num AS number, sections.price
+    FROM seats
+    JOIN seating_rows ON seats.row_id = seating_rows.id
+    JOIN sections ON seating_rows.section_id = sections.id
+    WHERE seats.order_number = ?
+  `;
+  try {
+    const [seats] = await db.query(sql, [orderNumber]);
+    return seats;
+  } catch (error) {
+    throw new Error("Failed to fetch seats: " + error.message);
   }
 };
