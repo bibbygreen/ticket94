@@ -19,10 +19,6 @@ body{
   margin-bottom: 50px;
 }
 
-main{
-  height: 100vh;
-}
-
 .main-content {
   flex: 1; 
 }

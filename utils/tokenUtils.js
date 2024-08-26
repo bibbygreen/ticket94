@@ -20,7 +20,6 @@ const verifyToken = (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  console.log("Token:", token);
 
   try {
     // 驗證 token 並將解碼的 payload 存入 req.user

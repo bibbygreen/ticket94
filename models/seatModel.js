@@ -74,13 +74,28 @@ exports.getExpiredSeats = async () => {
   return seats;
 };
 
+// exports.releaseSeatsByMember = async () => {
+//   const sql = `
+//     UPDATE seats
+//     SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
+//     WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
+//   `;
+//   return db.query(sql);
+// };
 exports.releaseSeatsByMember = async () => {
   const sql = `
     UPDATE seats
     SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
-    WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
+    WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW() AND id BETWEEN 1 AND 1000000;
   `;
-  return db.query(sql);
+
+  try {
+    const [result] = await db.query(sql);
+    return result.affectedRows; // 返回被更新的行數
+  } catch (error) {
+    console.error("Error releasing seats:", error);
+    throw new Error("Failed to release seats");
+  }
 };
 
 exports.findSeatIdsByDetails = async (area, seats) => {
