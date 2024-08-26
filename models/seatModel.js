@@ -28,9 +28,9 @@ exports.holdSeats = (seatIds, memberId) => {
   return db.query(sql, [memberId, seatIds]);
 };
 
-exports.releaseSeats = (seatIds) => {
-  const sql = `UPDATE seats SET status = 'V', member_id = NULL, hold_expires_at = NULL WHERE id IN (?) AND status = 'T'`;
-  return db.query(sql, [seatIds]);
+exports.releaseSeats = (userId) => {
+  const sql = `UPDATE seats SET status = 'V', member_id = NULL, hold_expires_at = NULL WHERE member_id = ? AND status = 'T'`;
+  return db.query(sql, [userId]);
 };
 
 exports.reserveSeats = (seatIds, orderNumber) => {
@@ -69,7 +69,7 @@ exports.getExpiredSeats = async () => {
       FROM seats
       WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
     )
-  `; //同時更新訂單狀態
+  `; //更改座位狀態為V同時更新訂單狀態
   const [seats] = await db.query(sql);
   return seats;
 };

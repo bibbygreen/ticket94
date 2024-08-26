@@ -127,10 +127,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const previousButton = document.getElementById("cancel-button");
-  if (previousButton) {
-    previousButton.addEventListener("click", () => {
-      window.location.href = "/";
+  const cancelButton = document.getElementById("cancel-button");
+  if (cancelButton) {
+    cancelButton.addEventListener("click", () => {
+      fetch("/api/release-seats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to release seats.");
+          }
+          return response.text();
+        })
+        .then(() => {
+          window.location.href = "/";
+        })
+        .catch((error) => {
+          console.error("Error releasing seats:", error);
+          alert("Error releasing seats. Please try again.");
+        });
     });
   }
 });

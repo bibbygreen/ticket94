@@ -3,7 +3,6 @@ import { fetchMemberData } from "./signin-signup.js";
 document.addEventListener("DOMContentLoaded", () => {
   let seatIds = [];
 
-  // 獲取鎖定的座位資訊
   fetch("/api/locked-seats", {
     method: "GET",
     headers: {
@@ -43,11 +42,32 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error fetching user data:", error);
     });
 
-  // 處理取消按鈕點擊事件
   const cancelButton = document.querySelector(".cancel-button");
-  cancelButton.addEventListener("click", function () {
-    window.location.href = "/";
-  });
+  if (cancelButton) {
+    cancelButton.addEventListener("click", () => {
+      // 釋放所有座位
+      fetch("/api/release-seats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to release seats.");
+          }
+          return response.text();
+        })
+        .then(() => {
+          window.location.href = "/";
+        })
+        .catch((error) => {
+          console.error("Error releasing seats:", error);
+          alert("Error releasing seats. Please try again.");
+        });
+    });
+  }
 
   // 動態加載 TPDirect SDK 並在加載完成後設置
   const script = document.createElement("script");
@@ -205,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
           email: contactEmail,
           phone_number: contactPhone,
         },
-        seatIds: seatIds, // Include seatIds in order data
+        seatIds: seatIds,
       };
 
       fetch("/api/orders", {
@@ -233,13 +253,13 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = `/finish.html?orderNumber=${orderNumber}`;
           } else {
             alert("交易失敗，敬請重新訂購");
-            // window.location.href = "/";
+            window.location.href = "/";
           }
         })
         .catch((error) => {
           console.error("Error:", error);
           alert(`Booking failed. Please try again. Error: ${error.message}`);
-          // window.location.href = "/";
+          window.location.href = "/";
         });
     });
   }

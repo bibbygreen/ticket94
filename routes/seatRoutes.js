@@ -1,9 +1,9 @@
+//seatRoutes.js
 const express = require("express");
 const router = express.Router();
 const seatController = require("../controllers/seatController");
 const { verifyToken } = require("../utils/tokenUtils");
 
-// router.post("/select-seats", seatController.selectSeats);
 router.post("/check-seats", verifyToken, seatController.checkSeats);
 router.post("/hold-seats", verifyToken, seatController.holdSeats);
 router.post("/reserve-seats", verifyToken, seatController.reserveSeats);

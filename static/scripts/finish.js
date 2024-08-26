@@ -22,13 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((data) => {
       const { order, seats } = data;
       if (seats && seats.length > 0) {
-        displaySummaryTable(seats, order); // 顯示座位資訊
-      } else {
+        displaySummaryTable(seats, order);
         document.getElementById("summary-container").innerHTML =
           "<p>No seat selection found.</p>";
       }
 
-      // 根據付款方式顯示不同的資訊
       if (order.payment_method === "ibon付款") {
         displayIbonInfo(
           order.ibon_number,
@@ -76,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <tbody>
           ${seatRows}
           <tr>
-          <td colspan="3" style="text-align: right;">張數</td>
+          <td colspan="3" style="text-align: right;">訂購張數</td>
           <td id="ticket-count" style="color:blue">${totalTickets} 張</td>
         </tr>
           <tr>

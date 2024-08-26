@@ -36,7 +36,7 @@ export async function checkSigninStatus() {
     }
 
     const userData = await response.json();
-    console.log("User is logged in:", userData);
+    // console.log("User is logged in:", userData);
   } catch (error) {
     console.error("User not logged in or token invalid:", error);
     window.location.href = "/";

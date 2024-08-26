@@ -79,8 +79,8 @@ exports.reserveSeats = async (req, res) => {
 
 exports.releaseSeats = async (req, res) => {
   try {
-    const { seatIds } = req.body;
-    await SeatModel.releaseSeats(seatIds);
+    const userId = req.user.id;
+    await SeatModel.releaseSeats(userId);
     res.send("Seats released successfully.");
   } catch (error) {
     res.status(500).json({ error: error.message });
