@@ -17,7 +17,13 @@
         </div>
         <div class="menu">
           <div id="signin-link" class="menu-item">會員登入</div>
-          <div id="profile-link" class="menu-item" style="display: none;">會員中心</div>
+          <div id="profile-dropdown" class="menu-item profile-dropdown" style="display: none;">
+            會員中心
+            <div class="dropdown-content" style="display: none;">
+              <a href="/profile">個人資料</a>
+              <a href="/history">訂單查詢</a>
+            </div>
+          </div>
           <div id="logout-link" class="menu-item" style="display: none;">會員登出</div>
         </div>
       </div>     

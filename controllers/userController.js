@@ -1,5 +1,5 @@
 //userController
-const userModel = require("../models/userModel");
+const UserModel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { generateToken, verifyToken } = require("../utils/tokenUtils");
 
@@ -13,18 +13,18 @@ exports.signUp = async (req, res) => {
 
   try {
     // 檢查email是否已經存在
-    const existingUser = await userModel.findUserByEmail(email);
+    const existingUser = await UserModel.findUserByEmail(email);
     if (existingUser.length > 0) {
       return res.status(409).json({ error: "此email帳號已註冊" });
     }
 
     // 檢查手機號碼是否已經存在
-    const existingPhone = await userModel.findUserByPhone(phone);
+    const existingPhone = await UserModel.findUserByPhone(phone);
     if (existingPhone.length > 0) {
       return res.status(409).json({ error: "此手機號碼已註冊" });
     }
 
-    await userModel.createUser(name, email, phone, password);
+    await UserModel.createUser(name, email, phone, password);
     res.status(201).json({ message: "註冊成功" });
   } catch (error) {
     console.error("註冊時發生錯誤：", error);
@@ -41,7 +41,7 @@ exports.signIn = async (req, res) => {
   }
 
   try {
-    const rows = await userModel.findUserByEmail(email);
+    const rows = await UserModel.findUserByEmail(email);
 
     if (rows.length === 0) {
       return res.status(401).json({ error: "您輸入的帳號有誤" });
@@ -67,7 +67,7 @@ exports.getUserInfo = async (req, res) => {
   try {
     // 直接使用 req.user，這是 verifyToken 中間件解碼後存入的用戶信息
     const email = req.user.email;
-    const rows = await userModel.getUserInfoByEmail(email);
+    const rows = await UserModel.getUserInfoByEmail(email);
 
     if (rows.length === 0) {
       return res.status(404).json({ error: "查無使用者帳號" });
@@ -78,5 +78,64 @@ exports.getUserInfo = async (req, res) => {
   } catch (error) {
     console.error("錯誤", error);
     res.status(500).json({ error: "伺服器發生錯誤" });
+  }
+};
+
+// 取得會員個人資料
+exports.getProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await UserModel.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: true, message: error.message });
+  }
+};
+
+// 更新手機號碼
+exports.updatePhone = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { phone } = req.body;
+
+    if (!phone) {
+      return res
+        .status(400)
+        .json({ error: true, message: "Phone number is required" });
+    }
+
+    await UserModel.updateUserPhone(userId, phone);
+    res.json({ success: true, message: "Phone number updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: true, message: error.message });
+  }
+};
+
+// 更新密碼
+exports.updatePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    // 從資料庫中獲取使用者資料
+    const user = await UserModel.getUserById(userId);
+    if (
+      !user ||
+      !(await UserModel.comparePassword(currentPassword, user.password))
+    ) {
+      return res
+        .status(401)
+        .json({ error: true, message: "Current password is incorrect" });
+    }
+
+    // 更新密碼
+    await UserModel.updateUserPassword(userId, newPassword);
+    res.json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res.status(500).json({ error: true, message: error.message });
   }
 };

@@ -5,7 +5,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 const generateToken = (user) => {
   return jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
-    expiresIn: "1h",
+    expiresIn: "3h",
   }); // Token expires in 1 hour
 };
 
@@ -20,6 +20,7 @@ const verifyToken = (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
+  console.log("Token:", token);
 
   try {
     // 驗證 token 並將解碼的 payload 存入 req.user

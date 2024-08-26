@@ -1,6 +1,8 @@
 //orderController.js
 const SeatModel = require("../models/seatModel");
 const OrderModel = require("../models/orderModel");
+const db = require("../config/dbConfig");
+const jwt = require("jsonwebtoken");
 
 function generateOrderNumber() {
   return Math.floor(100000000000 + Math.random() * 900000000000).toString();
@@ -221,5 +223,22 @@ exports.getOrderDetails = async (req, res) => {
     res
       .status(500)
       .json({ error: true, message: "Failed to fetch order details." });
+  }
+};
+
+exports.getOrderHistory = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const memberId = decodedToken.memberId;
+
+    const query = `
+      SELECT orders.order_number WHERE orders.user_id = ?`;
+    const [orders] = await db.execute(query, [memberId]);
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    res.status(500).json({ error: "無法取得訂單紀錄" });
   }
 };

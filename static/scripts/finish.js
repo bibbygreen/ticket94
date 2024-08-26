@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const { order, seats } = data;
       if (seats && seats.length > 0) {
         displaySummaryTable(seats, order);
+      } else {
         document.getElementById("summary-container").innerHTML =
           "<p>No seat selection found.</p>";
       }

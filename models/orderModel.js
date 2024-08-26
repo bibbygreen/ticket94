@@ -34,3 +34,15 @@ exports.getOrderDetails = async (orderNumber) => {
   const [rows] = await db.query(sql, [orderNumber]);
   return rows[0];
 };
+
+exports.getOrderHistoryByUserId = async (userId) => {
+  const sql = `
+    SELECT orders.order_number WHERE orders.user_id = ?
+  `;
+  try {
+    const [rows] = await db.query(sql, [userId]);
+    return rows;
+  } catch (error) {
+    throw new Error("Failed to fetch order history: " + error.message);
+  }
+};

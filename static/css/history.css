@@ -1,37 +1,25 @@
-*{
+* {
   font-family: Arial, sans-serif;
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
-body{
-  height: 100%;
+header{
+  margin-bottom: 30px;
+}
+main{
+  height: 100vh;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 20px;
 }
-
-#summary-container{
-  margin-top: 20px;
-  margin-bottom: 50px;
-}
-
-main{
-  height: 100vh;
-}
-
-.main-content {
-  flex: 1; 
-}
-
 
 .table-title{
   width: 180px;
 }
-
 h2 {
   margin-top: 20px;
   margin-bottom: 20px;

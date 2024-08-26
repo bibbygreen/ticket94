@@ -1,5 +1,6 @@
 export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
+
   if (token) {
     try {
       const response = await fetch("/api/user/auth", {
@@ -74,17 +75,34 @@ document.addEventListener("DOMContentLoaded", function () {
   const token = localStorage.getItem("token");
 
   const signinLink = document.getElementById("signin-link");
-  const profileLink = document.getElementById("profile-link");
+  const profileDropdown = document.getElementById("profile-dropdown");
+  const dropdownContent = document.querySelector(".dropdown-content");
   const logoutLink = document.getElementById("logout-link");
 
   if (token) {
     //登入
     signinLink.style.display = "none";
-    profileLink.style.display = "block";
+    profileDropdown.style.display = "block";
     logoutLink.style.display = "block";
 
-    profileLink.addEventListener("click", function () {
-      window.location.href = "/profile";
+    // 點擊會員中心顯示或隱藏下拉選單
+    profileDropdown.addEventListener("click", function (event) {
+      event.stopPropagation(); // 防止點擊事件冒泡
+      if (dropdownContent.style.display === "block") {
+        dropdownContent.style.display = "none";
+      } else {
+        dropdownContent.style.display = "block";
+      }
+    });
+
+    // 點擊其他地方隱藏下拉選單
+    document.addEventListener("click", function () {
+      dropdownContent.style.display = "none";
+    });
+
+    // 防止點擊下拉選單內容時隱藏選單
+    dropdownContent.addEventListener("click", function (event) {
+      event.stopPropagation();
     });
 
     logoutLink.addEventListener("click", function () {
@@ -97,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     // 未登入
     signinLink.style.display = "block";
-    profileLink.style.display = "none";
+    profileDropdown.style.display = "none";
     logoutLink.style.display = "none";
 
     signinLink.addEventListener("click", function () {

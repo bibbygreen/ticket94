@@ -28,6 +28,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const areaRoutes = require("./routes/areaRoutes");
 const seatRoutes = require("./routes/seatRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const queryRoutes = require("./routes/queryRoutes");
 
 // Use routes
 app.use("/api/user", userRoutes);
@@ -35,6 +36,7 @@ app.use("/", eventRoutes);
 app.use("/api", areaRoutes);
 app.use("/api", seatRoutes);
 app.use("/api", orderRoutes);
+app.use("/api", queryRoutes);
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");
@@ -62,6 +64,14 @@ app.get("/checkout/:id", function (req, res) {
 
 app.get("/booking", function (req, res) {
   res.sendFile(__dirname + "/static/booking.html");
+});
+
+app.get("/profile", function (req, res) {
+  res.sendFile(__dirname + "/static/profile.html");
+});
+
+app.get("/history", function (req, res) {
+  res.sendFile(__dirname + "/static/history.html");
 });
 
 app.get("/error", function (req, res) {
