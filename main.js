@@ -31,7 +31,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const queryRoutes = require("./routes/queryRoutes");
 
 // Use routes
-app.use("/api/user", userRoutes);
+app.use("/api", userRoutes);
 app.use("/", eventRoutes);
 app.use("/api", areaRoutes);
 app.use("/api", seatRoutes);

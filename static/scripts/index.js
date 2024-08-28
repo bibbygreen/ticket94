@@ -105,7 +105,7 @@ const tem_images = [
   "https://t.kfs.io/upload_images/208325/IMG_0654_medium.jpeg",
   "https://t.kfs.io/upload_images/208106/GI_1200x630_medium.jpg",
   "https://www.legacy.com.tw/uploads/image_library/1469005927.jpg",
-  "https://t.kfs.io/upload_images/207432/__G_I-DLE_MAIN-POSTER-1200x630_medium.jpg",
+  "https://t.kfs.io/upload_images/209030/_Ticket_Site__Main_KV_02_1200x630_TAIWAN_large.jpg",
 ];
 
 updateSlider(tem_images);

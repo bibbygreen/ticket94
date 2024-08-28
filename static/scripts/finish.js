@@ -1,4 +1,7 @@
+import { requireAuth } from "./signin-signup.js";
 document.addEventListener("DOMContentLoaded", () => {
+  requireAuth();
+
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);

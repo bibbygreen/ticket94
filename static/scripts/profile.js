@@ -4,6 +4,8 @@ import {
   showToast,
 } from "./signin-signup.js";
 
+let cachedUserData = null;
+
 function togglePasswordVisibility(id) {
   const passwordField = document.getElementById(id);
   const passwordFieldType = passwordField.getAttribute("type");
@@ -33,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const phone = document.getElementById("member-phone").value;
 
       try {
-        const response = await fetch("/api/user/phone", {
+        const response = await fetch("/api/users/me/phone", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -68,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const response = await fetch("/api/user/password", {
+        const response = await fetch("/api/users/me/password", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

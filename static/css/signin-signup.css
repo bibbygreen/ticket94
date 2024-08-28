@@ -44,7 +44,7 @@ html, body {
   bottom: 0;
   background: url('https://images.pexels.com/photos/2735037/pexels-photo-2735037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') no-repeat center center fixed;
   background-size: cover;
-  filter: blur(10px);
+  filter: blur(7px);
   z-index: -1;
 }
 

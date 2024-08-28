@@ -1,6 +1,7 @@
-import { fetchMemberData } from "./signin-signup.js";
+import { fetchMemberData, requireAuth } from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  requireAuth();
   let seatIds = [];
 
   fetch("/api/locked-seats", {

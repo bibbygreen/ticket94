@@ -5,20 +5,23 @@ const { generateToken, verifyToken } = require("../utils/tokenUtils");
 
 // Sign Up
 exports.signUp = async (req, res) => {
-  const { name, email, phone, password } = req.body;
+  const { name, email, phone, password } = req.body; //解構賦值
+  ////不使用解構賦值的傳統寫法
+  // const name = req.body.name;
+  // const email = req.body.email;
+  // const phone = req.body.phone;
+  // const password = req.body.password;
 
   if (!name || !email || !phone || !password) {
     return res.status(400).json({ error: "資料欄位填寫有誤或留白" });
   }
 
   try {
-    // 檢查email是否已經存在
     const existingUser = await UserModel.findUserByEmail(email);
     if (existingUser.length > 0) {
       return res.status(409).json({ error: "此email帳號已註冊" });
     }
 
-    // 檢查手機號碼是否已經存在
     const existingPhone = await UserModel.findUserByPhone(phone);
     if (existingPhone.length > 0) {
       return res.status(409).json({ error: "此手機號碼已註冊" });
@@ -65,7 +68,7 @@ exports.signIn = async (req, res) => {
 // New Get User Info
 exports.getUserInfo = async (req, res) => {
   try {
-    // 直接使用 req.user，這是 verifyToken 中間件解碼後存入的用戶信息
+    // 直接使用 req.user，這是 verifyToken 中間件解碼後存入的
     const email = req.user.email;
     const rows = await UserModel.getUserInfoByEmail(email);
 
@@ -102,13 +105,11 @@ exports.updatePhone = async (req, res) => {
     const { phone } = req.body;
 
     if (!phone) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Phone number is required" });
+      return res.status(400).json({ error: true, message: "請填入手機號碼" });
     }
 
     await UserModel.updateUserPhone(userId, phone);
-    res.json({ success: true, message: "Phone number updated successfully" });
+    res.json({ success: true, message: "手機號碼更新成功" });
   } catch (error) {
     res.status(500).json({ error: true, message: error.message });
   }

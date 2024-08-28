@@ -1,9 +1,21 @@
+let cachedUserData = null;
+
+export function requireAuth(redirectTo = "/") {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = redirectTo;
+    return false;
+  }
+  return true;
+}
+
 export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
 
   if (token) {
     try {
-      const response = await fetch("/api/user/auth", {
+      const response = await fetch("/api/users/me", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -27,7 +39,7 @@ export async function checkSigninStatus() {
       return;
     }
 
-    const response = await fetch("/api/user/auth", {
+    const response = await fetch("/api/users/me", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -37,6 +49,7 @@ export async function checkSigninStatus() {
     }
 
     const userData = await response.json();
+    cachedUserData = userData;
     // console.log("User is logged in:", userData);
   } catch (error) {
     console.error("User not logged in or token invalid:", error);
@@ -45,10 +58,14 @@ export async function checkSigninStatus() {
 }
 
 export async function fetchMemberData() {
+  if (cachedUserData) {
+    return cachedUserData;
+  }
+
   const token = localStorage.getItem("token");
   if (!token) throw new Error("No token available");
 
-  const response = await fetch("/api/user/auth", {
+  const response = await fetch("/api/users/me", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -56,7 +73,7 @@ export async function fetchMemberData() {
   if (!response.ok) throw new Error("Failed to fetch member data");
 
   const data = await response.json();
-  console.log(data); // Check the structure of data here
+  cachedUserData = data;
   return data;
 }
 
@@ -134,7 +151,7 @@ if (signInForm) {
     const password = document.getElementById("signin-password").value;
 
     try {
-      const response = await fetch("/api/user/auth", {
+      const response = await fetch("/api/auth", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +189,7 @@ if (signUpForm) {
     const password = document.getElementById("signup-password").value;
 
     try {
-      const response = await fetch("/api/user", {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
