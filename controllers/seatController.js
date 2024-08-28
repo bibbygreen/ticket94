@@ -50,6 +50,8 @@ exports.holdSeats = async (req, res) => {
     const { seatIds } = req.body;
     const memberId = req.user.id;
 
+    console.log("Received seatIds:", seatIds);
+
     await SeatModel.holdSeats(seatIds, memberId);
     res.send("Seats held successfully.");
   } catch (error) {
@@ -151,5 +153,17 @@ exports.getSeatIds = async (req, res) => {
     res
       .status(500)
       .json({ error: "An error occurred while getting seat IDs." });
+  }
+};
+
+exports.getSeatsForEvent = async (req, res) => {
+  const eventId = req.params.eventId;
+
+  try {
+    const seats = await SeatModel.seatIdforSeatDiagramByEventId(eventId);
+    res.json(seats);
+  } catch (error) {
+    console.error("Error fetching seats:", error);
+    res.status(500).json({ error: "Failed to fetch seats" });
   }
 };

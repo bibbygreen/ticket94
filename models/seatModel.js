@@ -19,13 +19,30 @@ exports.checkAvailableSeats = async (area, quantityNumber) => {
   }
 };
 
-exports.holdSeats = (seatIds, memberId) => {
-  const sql = `UPDATE seats 
-               SET status = 'T', 
-                   member_id = ?, 
-                   hold_expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE) 
-               WHERE id IN (?) AND status = 'V'`;
-  return db.query(sql, [memberId, seatIds]);
+exports.holdSeats = async (seatIds, memberId) => {
+  try {
+    if (!seatIds || seatIds.length === 0) {
+      throw new Error("No seats selected.");
+    }
+
+    const placeholders = seatIds.map(() => "?").join(", ");
+    const sql = `UPDATE seats 
+                 SET status = 'T', 
+                     member_id = ?, 
+                     hold_expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE) 
+                 WHERE id IN (${placeholders}) AND status = 'V'`;
+
+    console.log("Executing SQL:", sql);
+    console.log("With memberId:", memberId, "and seatIds:", seatIds);
+
+    const [results] = await db.query(sql, [memberId, ...seatIds]);
+    console.log("SQL Query Results:", results);
+
+    return results;
+  } catch (error) {
+    console.error("Error executing SQL:", error);
+    throw error;
+  }
 };
 
 exports.releaseSeats = (userId) => {
@@ -58,45 +75,100 @@ exports.getLockedSeatsByMemberId = async (memberId) => {
   } catch (error) {
     throw new Error("Database query failed: " + error.message);
   }
+}; //以使用者id獲得暫時保留的座位info
+
+// exports.getExpiredSeats = async () => {
+//   const sql = `
+//     UPDATE orders
+//     SET payment_status = 2, payment_message = '逾時繳費，訂單不成立'
+//     WHERE order_number IN (
+//       SELECT order_number
+//       FROM seats
+//       WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
+//     )
+//   `; //更改座位狀態為V同時更新訂單狀態
+//   const [seats] = await db.query(sql);
+//   return seats;
+// };
+
+exports.releaseTempSeatsByMember = async () => {
+  const sqlTempHold = `
+    UPDATE seats
+    SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
+    WHERE status = 'T' AND hold_expires_at < NOW() AND id BETWEEN 1 AND 1000000;
+  `;
+
+  try {
+    const [result] = await db.query(sqlTempHold);
+    return result.affectedRows; // 返回被更新的行數
+  } catch (error) {
+    console.error("Error releasing temporary hold seats:", error);
+    throw new Error("Failed to release temporary hold seats");
+  }
 };
 
-exports.getExpiredSeats = async () => {
-  const sql = `
-    UPDATE orders 
+exports.releaseIbonSeatsByMember = async () => {
+  const sqlUpdateOrders = `
+    UPDATE orders
     SET payment_status = 2, payment_message = '逾時繳費，訂單不成立'
     WHERE order_number IN (
-      SELECT order_number 
+      SELECT DISTINCT order_number
       FROM seats
-      WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
-    )
-  `; //更改座位狀態為V同時更新訂單狀態
-  const [seats] = await db.query(sql);
-  return seats;
-};
+      WHERE status = 'I' AND hold_expires_at < NOW()
+    );
+  `;
 
+  const sqlUpdateIbonSeats = `
+    UPDATE seats
+    SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
+    WHERE status = 'I' AND hold_expires_at < NOW() AND id BETWEEN 1 AND 1000000;
+  `;
+
+  try {
+    await db.query("START TRANSACTION");
+
+    const [resultOrders] = await db.query(sqlUpdateOrders);
+    const [resultSeats] = await db.query(sqlUpdateIbonSeats);
+
+    await db.query("COMMIT");
+
+    console.log(
+      `Released ${resultSeats.affectedRows} expired ibon hold seats.`
+    );
+    console.log(
+      `Updated ${resultOrders.affectedRows} orders to payment status 2.`
+    );
+
+    return {
+      seats: resultSeats.affectedRows,
+      orders: resultOrders.affectedRows,
+    };
+  } catch (error) {
+    await db.query("ROLLBACK");
+    console.error(
+      "Error releasing intermediate hold seats and updating orders:",
+      error
+    );
+    throw new Error(
+      "Failed to release intermediate hold seats and update orders"
+    );
+  }
+}; //刪除ibon保留的過期座位
 // exports.releaseSeatsByMember = async () => {
 //   const sql = `
 //     UPDATE seats
 //     SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
-//     WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
+//     WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW() AND id BETWEEN 1 AND 1000000;
 //   `;
-//   return db.query(sql);
-// };
-exports.releaseSeatsByMember = async () => {
-  const sql = `
-    UPDATE seats
-    SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
-    WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW() AND id BETWEEN 1 AND 1000000;
-  `;
 
-  try {
-    const [result] = await db.query(sql);
-    return result.affectedRows; // 返回被更新的行數
-  } catch (error) {
-    console.error("Error releasing seats:", error);
-    throw new Error("Failed to release seats");
-  }
-};
+//   try {
+//     const [result] = await db.query(sql);
+//     return result.affectedRows; // 返回被更新的行數
+//   } catch (error) {
+//     console.error("Error releasing seats:", error);
+//     throw new Error("Failed to release seats");
+//   }
+// };
 
 exports.findSeatIdsByDetails = async (area, seats) => {
   try {
@@ -161,4 +233,22 @@ exports.holdSeatsWithExpiration = (
     WHERE id IN (?) AND status = 'T'
   `;
   return db.query(sql, [memberId, holdExpireAt, orderNumber, seatIds]);
+};
+
+exports.seatIdforSeatDiagramByEventId = async (eventId) => {
+  const sql = `
+  SELECT seats.id, seats.status
+  FROM seats
+  INNER JOIN seating_rows ON seats.row_id = seating_rows.id
+  INNER JOIN sections ON seating_rows.section_id = sections.id
+  WHERE sections.event_id = ?;
+  `;
+
+  try {
+    const [results] = await db.query(sql, [eventId]);
+    return results;
+  } catch (error) {
+    console.error("Error fetching seat data:", error);
+    throw error;
+  }
 };

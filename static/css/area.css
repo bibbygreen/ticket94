@@ -170,6 +170,15 @@
   cursor: pointer; /* Add cursor style */
 }
 
+.seat.available {
+  background-color: #fff; /* 可用座位為白色背景 */
+}
+
+.seat.reserved, .seat.temp-held {
+  background-color: #ccc; /* 已預訂或暫時保留座位為灰色背景 */
+  cursor: not-allowed; /* 禁用鼠標點擊 */
+}
+
 .seat.selected {
   background-color: blue;
   color: white;

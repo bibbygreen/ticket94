@@ -21,13 +21,17 @@ export async function verifyUserSignInToken() {
       });
       if (!response.ok) {
         console.error("Server response:", await response.text());
+        window.location.href = "/";
         throw new Error("Token verification failed");
       }
       return await response.json();
     } catch (error) {
       console.error("Error during token verification:", error);
+      window.location.href = "/";
       throw error;
     }
+  } else {
+    window.location.href = "/";
   }
 }
 

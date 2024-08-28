@@ -1,25 +1,32 @@
 const SeatModel = require("../models/seatModel");
 
-// 設定清理過期座位的時間間隔（例如每 1 分鐘執行一次）
 const CLEAN_INTERVAL = 60 * 1000; // 1 分鐘（以毫秒為單位）
 
 const cleanExpiredSeats = async () => {
   try {
     console.log("Checking for expired seats...");
 
-    // 先檢查是否有過期的 temporary_hold 狀態的座位
-    const expiredSeats = await SeatModel.getExpiredSeats();
-
-    if (expiredSeats.length > 0) {
-      console.log(`Found ${expiredSeats.length} expired seats, cleaning up...`);
-
-      // 如果找到過期的座位，則根據 member_id 檢查並釋放所有過期的 temporary_hold 狀態的座位
-      await SeatModel.releaseSeatsByMember();
-
-      console.log("Seat cleaner job completed.");
+    // 清理過期的 temporary_hold 狀態的座位
+    const expiredTempHoldSeats = await SeatModel.releaseTempSeatsByMember();
+    if (expiredTempHoldSeats > 0) {
+      console.log(
+        `Released ${expiredTempHoldSeats} expired temporary hold seats.`
+      );
     } else {
-      console.log("No expired seats found.");
+      console.log("No expired temporary hold seats found.");
     }
+
+    // 清理過期的 intermediate 狀態的座位
+    const expiredIbonSeats = await SeatModel.releaseIbonSeatsByMember();
+    if (expiredIbonSeats > 0) {
+      console.log(
+        `Released ${expiredIbonSeats} expired intermediate hold seats.`
+      );
+    } else {
+      console.log("No expired intermediate hold seats found.");
+    }
+
+    console.log("Seat cleaner job completed.");
   } catch (error) {
     console.error("Error in seat cleaner job:", error);
   }
