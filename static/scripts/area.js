@@ -68,22 +68,6 @@ async function fetchAvailableSeats(area, quantity) {
   return data;
 }
 
-async function fetchSeatsForEvent(eventId) {
-  try {
-    const response = await fetch(`/api/seats/${eventId}`);
-    console.log("fetchSeatsForEvent response:", response);
-    if (!response.ok) {
-      throw new Error("Failed to fetch seats for event.");
-    }
-    const seats = await response.json();
-    console.log("fetchSeatsForEvent seats data:", seats);
-    return seats;
-  } catch (error) {
-    console.error("Error fetching seats for event:", error);
-    return [];
-  }
-}
-
 // 根據事件 ID 獲取座位信息
 async function fetchSeatsForArea(areaName) {
   try {
@@ -132,7 +116,7 @@ async function autoSelectSeats(area, quantity) {
     });
 
     if (response.ok) {
-      // window.location.href = `/checkout/${eventId}`;
+      window.location.href = `/checkout/${eventId}`;
     } else {
       const errorData = await response.json();
       throw new Error(errorData.error || "Failed to hold seats.");
@@ -157,12 +141,12 @@ async function showSeatDiagramModal(areaName, quantity, price) {
     <h2>↑↑↑座位面向↑↑↑</h2>
     <h2>所選擇區域 ${areaName}區</h2>
     <button class="close-modal">關閉</button>
+    <button class="clear-selection-button">重設選位</button>
     <button class="seat-confirm-button">確認選位</button>
   </div>
   <div id="seat-container">${seatDiagram}</div>
   
 `;
-  // <div id="seat-container">${await createSeatDiagram()}</div>
   modal.appendChild(modalContent);
   document.body.appendChild(modal);
 
@@ -178,6 +162,14 @@ async function showSeatDiagramModal(areaName, quantity, price) {
     }
   });
 
+  // 清除選擇
+  modalContent
+    .querySelector(".clear-selection-button")
+    .addEventListener("click", () => {
+      clearSelectedSeats();
+    });
+
+  // 確認選位
   modalContent
     .querySelector(".seat-confirm-button")
     .addEventListener("click", async () => {
@@ -204,7 +196,7 @@ async function showSeatDiagramModal(areaName, quantity, price) {
 
         if (response.ok) {
           modal.style.display = "none";
-          // window.location.href = `/checkout/${eventId}`;
+          window.location.href = `/checkout/${eventId}`;
         } else {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to hold seats.");
@@ -227,88 +219,19 @@ async function showSeatDiagramModal(areaName, quantity, price) {
     });
   });
 }
-// modalContent
-//   .querySelector(".seat-confirm-button")
-//   .addEventListener("click", async () => {
-//     const selectedSeats = document.querySelectorAll(".seat.selected");
-//     const seatData = Array.from(selectedSeats).map((seat) => ({
-//       area: areaName,
-//       row: seat.dataset.row,
-//       number: seat.dataset.seat,
-//       price: price,
-//       quantity: quantity,
-//     }));
 
-//     selectedSeatsData = seatData;
-//     console.log("Generated seatData:", seatData); //////
+function clearSelectedSeats() {
+  // 清除所有已選中的座位樣式
+  document.querySelectorAll(".seat.selected").forEach((seat) => {
+    seat.classList.remove("selected");
+    seat.style.backgroundColor = "";
+    seat.style.color = "";
+  });
 
-//     try {
-//       const token = localStorage.getItem("token");
-
-//       const responseGetIds = await fetch("/api/get-seat-ids", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({
-//           area: areaName,
-//           seats: seatData,
-//         }),
-//       });
-
-//       if (!responseGetIds.ok) {
-//         throw new Error("Failed to get seat IDs.");
-//       }
-
-//       const { seatIds } = await responseGetIds.json();
-//       console.log("Seat IDs:", seatIds); //
-
-//       const response = await fetch("/api/hold-seats", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ seatIds }),
-//       });
-
-//       if (response.ok) {
-//         modal.style.display = "none";
-//         window.location.href = `/checkout/${eventId}`;
-//       } else {
-//         const errorData = await response.json();
-//         throw new Error(errorData.error || "Failed to hold seats.");
-//       }
-//     } catch (error) {
-//       console.error("Error holding seats:", error);
-//       alert("Error holding seats: " + error.message);
-//     }
-//   }); //modalContent.querySelector(".seat-confirm-button").addEventListener
-
-//   document.querySelectorAll(".seat").forEach((seat) => {
-//     const isSelected = selectedSeatsData.some(
-//       (selected) =>
-//         selected.row === seat.dataset.row &&
-//         selected.number === seat.dataset.seat
-//     );
-//     if (isSelected) {
-//       seat.classList.add("selected");
-//       seat.style.backgroundColor = "blue";
-//       seat.style.color = "white";
-//     }
-
-//     seat.addEventListener("click", () => {
-//       handleSeatSelection(seat);
-//     });
-
-//     const closeButton = modalContent.querySelector(".close-modal");
-//     closeButton.addEventListener("click", () => {
-//       resetSelectedSeats();
-//       modal.style.display = "none";
-//     });
-//   });
-// } //function showSeatDiagramModal
+  // 清空 selectedSeatsData 數組
+  selectedSeatsData = [];
+  console.log("All selected seats have been cleared.");
+}
 
 // 重置已選擇的座位狀態
 function resetSelectedSeats() {
@@ -368,7 +291,7 @@ async function createSeatDiagram(areaName) {
   let diagram = "";
 
   for (let row = 1; row <= rows; row++) {
-    diagram += `<div class="row">Row ${row}<br>`; // Start of a row
+    diagram += `<div class="row">${row}排<br>`; // Start of a row
     for (let seat = 1; seat <= seatsPerRow; seat++) {
       const seatId = (row - 1) * seatsPerRow + seat; // 根據 row 和 seat 計算唯一座位 ID
       const areaSeatId = calculateAreaSeatId(areaName, seatId);
@@ -441,33 +364,3 @@ function getEventIdFromUrl() {
     return null;
   }
 }
-
-// document.addEventListener("DOMContentLoaded", () => {
-//   checkSigninStatus();
-
-//   // Extract attraction ID from URL
-//   const href = location.href;
-//   // const pattern = /^https?:\/\/.+\/event\/(\d+)/;
-//   const pattern = /\/area\/(\d+)/;
-//   const match = href.match(pattern);
-//   if (match) {
-//     eventId = match[1];
-//   } else {
-//     console.error("Invalid URL format. Unable to extract area ID.");
-//   }
-
-//   const areas = document.querySelectorAll(".area");
-
-//   areas.forEach((area) => {
-//     area.addEventListener("click", () => {
-//       selectedAreaName = area.getAttribute("data-area");
-//       selectedAreaPrice = parseInt(
-//         area.querySelector(".area-price").textContent.replace(/\D/g, ""),
-//         10
-//       );
-//       displayTicketOptions(selectedAreaName, selectedAreaPrice);
-//       areas.forEach((a) => a.classList.remove("selected"));
-//       area.classList.add("selected");
-//     });
-//   });
-// });

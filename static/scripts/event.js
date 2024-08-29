@@ -1,4 +1,4 @@
-import { verifyUserSignInToken } from "./signin-signup.js";
+import { verifyUserSignInToken, showToast } from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab");
@@ -151,7 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Navigating to area page with eventId:", eventId); ////
         window.location.href = `/area/${eventId}`;
       } else {
-        window.location.href = "/signin";
+        showToast("購票前請先登入");
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
       }
     } catch (error) {
       console.error("Error checking user sign-in status:", error);

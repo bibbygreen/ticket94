@@ -252,3 +252,23 @@ exports.seatIdforSeatDiagramByEventId = async (eventId) => {
     throw error;
   }
 };
+
+exports.getHeldSeatsDetails = async (seatIds) => {
+  const placeholders = seatIds.map(() => "?").join(", ");
+
+  const sql = `
+    SELECT s.id, s.seat_num AS number, sr.row_num, sec.section_name, sec.price
+    FROM seats s
+    INNER JOIN seating_rows sr ON s.row_id = sr.id
+    INNER JOIN sections sec ON sr.section_id = sec.id
+    WHERE s.id IN (${placeholders});
+  `;
+
+  try {
+    const [results] = await db.query(sql, seatIds);
+    return results;
+  } catch (error) {
+    console.error("Error fetching held seats details:", error);
+    throw error;
+  }
+};

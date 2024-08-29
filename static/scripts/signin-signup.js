@@ -31,7 +31,10 @@ export async function verifyUserSignInToken() {
       throw error;
     }
   } else {
-    window.location.href = "/";
+    showToast("購票前請先登入");
+    setTimeout(() => {
+      window.location.href = "/signin";
+    }, 2000);
   }
 }
 

@@ -50,10 +50,21 @@ exports.holdSeats = async (req, res) => {
     const { seatIds } = req.body;
     const memberId = req.user.id;
 
+    if (!seatIds || seatIds.length === 0) {
+      return res.status(400).json({ error: "No seats selected." });
+    }
+
     console.log("Received seatIds:", seatIds);
 
     await SeatModel.holdSeats(seatIds, memberId);
-    res.send("Seats held successfully.");
+
+    // 獲取已保留座位的詳細信息
+    const heldSeatsDetails = await SeatModel.getHeldSeatsDetails(seatIds);
+
+    res.json({
+      message: "Seats held successfully.",
+      seats: heldSeatsDetails,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
