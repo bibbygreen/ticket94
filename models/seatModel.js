@@ -32,11 +32,9 @@ exports.holdSeats = async (seatIds, memberId) => {
                      hold_expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE) 
                  WHERE id IN (${placeholders}) AND status = 'V'`;
 
-    console.log("Executing SQL:", sql);
-    console.log("With memberId:", memberId, "and seatIds:", seatIds);
+    // console.log("With memberId:", memberId, "and seatIds:", seatIds);
 
     const [results] = await db.query(sql, [memberId, ...seatIds]);
-    console.log("SQL Query Results:", results);
 
     return results;
   } catch (error) {

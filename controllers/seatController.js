@@ -1,8 +1,9 @@
 // seatController.js
 const SeatModel = require("../models/seatModel");
 
-exports.checkSeats = async (req, res) => {
-  const { area, quantity } = req.body;
+exports.getAvailableSeats = async (req, res) => {
+  const { eventId } = req.params;
+  const { area, quantity } = req.query;
   const quantityNumber = Number(quantity);
 
   // Validate input
@@ -28,7 +29,6 @@ exports.checkSeats = async (req, res) => {
           number: seat.number,
           price: seat.price,
         })),
-        price: seats.length > 0 ? seats[0].price : 0,
       };
     } else {
       response = {
@@ -53,8 +53,6 @@ exports.holdSeats = async (req, res) => {
     if (!seatIds || seatIds.length === 0) {
       return res.status(400).json({ error: "No seats selected." });
     }
-
-    console.log("Received seatIds:", seatIds);
 
     await SeatModel.holdSeats(seatIds, memberId);
 

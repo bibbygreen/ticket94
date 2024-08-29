@@ -54,15 +54,19 @@ function displayTicketOptions(areaId, price) {
 } //function displayTicketOptions
 
 async function fetchAvailableSeats(area, quantity) {
+  console.log("Area:", area);
+  console.log("Quantity:", quantity);
   const token = localStorage.getItem("token");
-  const response = await fetch("/api/check-seats", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ area, quantity }),
-  });
+  const response = await fetch(
+    `/api/events/${eventId}/seats?area=${area}&quantity=${quantity}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   if (!response.ok) throw new Error("Failed to fetch available seats.");
   const data = await response.json();
   return data;
@@ -116,7 +120,7 @@ async function autoSelectSeats(area, quantity) {
     });
 
     if (response.ok) {
-      window.location.href = `/checkout/${eventId}`;
+      // window.location.href = `/checkout/${eventId}`;
     } else {
       const errorData = await response.json();
       throw new Error(errorData.error || "Failed to hold seats.");
@@ -196,7 +200,7 @@ async function showSeatDiagramModal(areaName, quantity, price) {
 
         if (response.ok) {
           modal.style.display = "none";
-          window.location.href = `/checkout/${eventId}`;
+          // window.location.href = `/checkout/${eventId}`;
         } else {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to hold seats.");
