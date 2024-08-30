@@ -54,7 +54,7 @@
 }
 
 .purchaseProgress .progress-step.active:before {
-  background: linear-gradient(90deg, #026CDF, #C56BFF);
+  background: linear-gradient(90deg, #c36cfd, #085cb6 );
   border: none;
   color: #fff;
 }
@@ -62,7 +62,7 @@
 .purchaseProgress .progress-step.completed:before {
   font-family: "FontAwesome";
   content: "\f00c";
-  background: linear-gradient(90deg, #026CDF, #C56BFF);
+  background: linear-gradient(90deg, #c36cfd, #085cb6);
   border: none;
   color: #fff;
   font-weight: bold;
