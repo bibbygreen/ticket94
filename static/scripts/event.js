@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   tabs.forEach((tab) => tab.addEventListener("click", handleTabClick));
 
   async function fetchEvent(id) {
-    const url = `/api/event/${id}`;
+    const url = `/api/events/${id}`;
     try {
       const response = await fetch(url, { method: "GET" });
 

@@ -17,7 +17,7 @@ exports.checkAvailableSeats = async (area, quantityNumber) => {
   } catch (error) {
     throw new Error("Database query failed: " + error.message);
   }
-};
+}; //seatController.getAvailableSeats
 
 exports.holdSeats = async (seatIds, memberId) => {
   try {
@@ -41,23 +41,23 @@ exports.holdSeats = async (seatIds, memberId) => {
     console.error("Error executing SQL:", error);
     throw error;
   }
-};
+}; //seatController.holdSeats
 
 exports.releaseSeats = (userId) => {
   const sql = `UPDATE seats SET status = 'V', member_id = NULL, hold_expires_at = NULL WHERE member_id = ? AND status = 'T'`;
   return db.query(sql, [userId]);
-};
+}; //seatController.cancelHold
 
 exports.reserveSeats = (seatIds, orderNumber) => {
   const sql = `UPDATE seats SET status = 'R', hold_expires_at = NULL, order_number = ? WHERE id IN (?) AND status = 'T'`;
   return db.query(sql, [orderNumber, seatIds]);
-};
+}; //orderController.createOrder
 
 exports.checkSeatsStatus = async (seatIds) => {
   const sql = `SELECT id FROM seats WHERE id IN (?) AND status = 'T'`;
   const [seats] = await db.query(sql, [seatIds]);
   return seats;
-};
+}; //orderController.createOrder
 
 exports.getLockedSeatsByMemberId = async (memberId) => {
   try {
@@ -73,21 +73,7 @@ exports.getLockedSeatsByMemberId = async (memberId) => {
   } catch (error) {
     throw new Error("Database query failed: " + error.message);
   }
-}; //以使用者id獲得暫時保留的座位info
-
-// exports.getExpiredSeats = async () => {
-//   const sql = `
-//     UPDATE orders
-//     SET payment_status = 2, payment_message = '逾時繳費，訂單不成立'
-//     WHERE order_number IN (
-//       SELECT order_number
-//       FROM seats
-//       WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW()
-//     )
-//   `; //更改座位狀態為V同時更新訂單狀態
-//   const [seats] = await db.query(sql);
-//   return seats;
-// };
+}; //seatController.cancelHold 以使用者id獲得暫時保留的座位info
 
 exports.releaseTempSeatsByMember = async () => {
   const sqlTempHold = `
@@ -103,7 +89,7 @@ exports.releaseTempSeatsByMember = async () => {
     console.error("Error releasing temporary hold seats:", error);
     throw new Error("Failed to release temporary hold seats");
   }
-};
+}; //utils.seatCleaner
 
 exports.releaseIbonSeatsByMember = async () => {
   const sqlUpdateOrders = `
@@ -151,22 +137,7 @@ exports.releaseIbonSeatsByMember = async () => {
       "Failed to release intermediate hold seats and update orders"
     );
   }
-}; //刪除ibon保留的過期座位
-// exports.releaseSeatsByMember = async () => {
-//   const sql = `
-//     UPDATE seats
-//     SET status = 'V', member_id = NULL, hold_expires_at = NULL, order_number = NULL
-//     WHERE (status = 'T' OR status = 'I') AND hold_expires_at < NOW() AND id BETWEEN 1 AND 1000000;
-//   `;
-
-//   try {
-//     const [result] = await db.query(sql);
-//     return result.affectedRows; // 返回被更新的行數
-//   } catch (error) {
-//     console.error("Error releasing seats:", error);
-//     throw new Error("Failed to release seats");
-//   }
-// };
+}; //utils.seatCleaner 刪除ibon保留的過期座位
 
 exports.findSeatIdsByDetails = async (area, seats) => {
   try {
@@ -198,7 +169,7 @@ exports.findSeatIdsByDetails = async (area, seats) => {
     console.error("Database query failed:", error.message);
     throw new Error("Database query failed: " + error.message);
   }
-};
+}; //seatController.getSeatIds
 
 exports.getSeatsByOrderNumber = async (orderNumber) => {
   const sql = `
@@ -214,7 +185,7 @@ exports.getSeatsByOrderNumber = async (orderNumber) => {
   } catch (error) {
     throw new Error("Failed to fetch seats: " + error.message);
   }
-};
+}; //orderController.getOrderSeats, orderController.getOrderDetails
 
 exports.holdSeatsWithExpiration = (
   seatIds,
@@ -231,7 +202,7 @@ exports.holdSeatsWithExpiration = (
     WHERE id IN (?) AND status = 'T'
   `;
   return db.query(sql, [memberId, holdExpireAt, orderNumber, seatIds]);
-};
+}; //orderController.createIbonOrder
 
 exports.seatIdforSeatDiagramByEventId = async (eventId) => {
   const sql = `
@@ -249,7 +220,7 @@ exports.seatIdforSeatDiagramByEventId = async (eventId) => {
     console.error("Error fetching seat data:", error);
     throw error;
   }
-};
+}; //seatController.getSeatsForEvent
 
 exports.getHeldSeatsDetails = async (seatIds) => {
   const placeholders = seatIds.map(() => "?").join(", ");
@@ -269,4 +240,4 @@ exports.getHeldSeatsDetails = async (seatIds) => {
     console.error("Error fetching held seats details:", error);
     throw error;
   }
-};
+}; //orderController.getOrderDetails
