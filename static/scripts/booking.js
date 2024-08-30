@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
   let seatIds = [];
 
-  fetch("/api/locked-seats", {
+  fetch("/api/seats/locked", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cancelButton) {
     cancelButton.addEventListener("click", () => {
       // 釋放所有座位
-      fetch("/api/release-seats", {
+      fetch("/api/seats/release", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

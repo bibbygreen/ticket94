@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let seatIds = [];
   let totalPrice = 0;
 
-  fetch("/api/locked-seats", {
+  fetch("/api/seats/locked", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelButton = document.getElementById("cancel-button");
   if (cancelButton) {
     cancelButton.addEventListener("click", () => {
-      fetch("/api/release-seats", {
+      fetch("/api/seats/release", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -9,12 +9,11 @@ router.get(
   verifyToken,
   seatController.getAvailableSeats
 );
-router.post("/hold-seats", verifyToken, seatController.holdSeats); //////////
-router.post("/reserve-seats", verifyToken, seatController.reserveSeats);
-router.post("/release-seats", verifyToken, seatController.releaseSeats);
-router.get("/locked-seats", verifyToken, seatController.getLockedSeats); ////////////
+router.post("/seats/hold", verifyToken, seatController.holdSeats); //////////
+router.post("/seats/release", verifyToken, seatController.releaseSeats);
+router.get("/seats/locked", verifyToken, seatController.getLockedSeats); ////////////
 router.post("/cancel-hold", verifyToken, seatController.cancelHold);
 router.post("/get-seat-ids", verifyToken, seatController.getSeatIds); //////////////
 router.get("/seats/:eventId", seatController.getSeatsForEvent); //////
-
+// router.post("/reserve-seats", verifyToken, seatController.reserveSeats);
 module.exports = router;

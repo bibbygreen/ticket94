@@ -110,7 +110,7 @@ async function autoSelectSeats(area, quantity) {
 
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("/api/hold-seats", {
+    const response = await fetch("/api/seats/hold", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,7 +120,7 @@ async function autoSelectSeats(area, quantity) {
     });
 
     if (response.ok) {
-      // window.location.href = `/checkout/${eventId}`;
+      window.location.href = `/checkout/${eventId}`;
     } else {
       const errorData = await response.json();
       throw new Error(errorData.error || "Failed to hold seats.");
@@ -189,7 +189,7 @@ async function showSeatDiagramModal(areaName, quantity, price) {
 
         const seatIds = selectedSeatsData.map((seat) => seat.id);
 
-        const response = await fetch("/api/hold-seats", {
+        const response = await fetch("/api/seats/hold", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -200,7 +200,7 @@ async function showSeatDiagramModal(areaName, quantity, price) {
 
         if (response.ok) {
           modal.style.display = "none";
-          // window.location.href = `/checkout/${eventId}`;
+          window.location.href = `/checkout/${eventId}`;
         } else {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to hold seats.");
