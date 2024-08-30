@@ -1,7 +1,10 @@
 import { fetchMemberData, requireAuth } from "./signin-signup.js";
+import { activateStep } from "./progress.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
+  activateStep(3);
+
   let seatIds = [];
 
   fetch("/api/seats/locked", {

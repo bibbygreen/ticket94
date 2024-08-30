@@ -1,7 +1,9 @@
 import { fetchMemberData, requireAuth } from "./signin-signup.js";
+import { activateStep } from "./progress.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
+  activateStep(2);
 
   let seatIds = [];
   let totalPrice = 0;

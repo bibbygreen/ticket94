@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${
             data.onSale
               ? '<button class="buy-button">立即購買</button>'
-              : "尚未開賣"
+              : "已售完"
           }</td>
         </tr>
       </tbody>

@@ -1,4 +1,5 @@
 import { checkSigninStatus } from "./signin-signup.js";
+import { activateStep } from "./progress.js";
 
 let eventId;
 let selectedAreaName = "";
@@ -337,6 +338,7 @@ function calculateAreaSeatId(areaName, seatId) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  activateStep(1);
   checkSigninStatus();
 
   eventId = getEventIdFromUrl();

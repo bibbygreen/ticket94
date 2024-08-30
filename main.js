@@ -37,6 +37,7 @@ app.use("/api", areaRoutes);
 app.use("/api", seatRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", queryRoutes);
+app.use("/node_modules", express.static(__dirname + "/node_modules"));
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");

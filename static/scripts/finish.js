@@ -1,6 +1,9 @@
 import { requireAuth } from "./signin-signup.js";
+import { activateStep } from "./progress.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
+  activateStep(4);
 
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);

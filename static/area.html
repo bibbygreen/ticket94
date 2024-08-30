@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/progress.css">
     <link rel="stylesheet" href="/css/event-profile.css">
     <link rel="stylesheet" href="/css/signin-signup.css">
+    <link rel="stylesheet" href="../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
 </head>
 <body>
   <header>
@@ -34,12 +35,15 @@
 
   <main>
     <div class="container">
-      <section class="progress-bar">
-        <div class="progress-step active">選擇票區</div>
-        <div class="progress-step">確認資料</div>
-        <div class="progress-step">付款結帳</div>
-        <div class="progress-step">購票完成</div>
-      </section>
+      <div class="purchaseProgress">
+        <div class="progress-track">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-step active" data-step="1">選擇票區</div>
+        <div class="progress-step" data-step="2">確認資料</div>
+        <div class="progress-step" data-step="3">付款結帳</div>
+        <div class="progress-step" data-step="4">購票完成</div>
+      </div>
 
       <section class="event-profile">
         <div class="event-image">
