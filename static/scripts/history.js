@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 
   try {
-    const response = await fetch("/api/query", {
+    const response = await fetch("/api/history/orders", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -98,12 +98,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           orderDiv.innerHTML = orderInfoTable + seatsTable;
           orderHistoryContainer.appendChild(orderDiv);
 
-          // 為“展開明細”按鈕添加事件監聽
+          // 展開明細
           const toggleButton = orderDiv.querySelector(".toggle-details");
           const detailsDiv = orderDiv.querySelector(".details");
 
           toggleButton.addEventListener("click", () => {
-            // 切換明細表格的顯示與隱藏
             if (detailsDiv.style.display === "none") {
               detailsDiv.style.display = "block";
               toggleButton.textContent = "收起明細";

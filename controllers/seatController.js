@@ -6,14 +6,12 @@ exports.getAvailableSeats = async (req, res) => {
   const { area, quantity } = req.query;
   const quantityNumber = Number(quantity);
 
-  // Validate input
   if (!area || typeof quantityNumber !== "number" || quantityNumber <= 0) {
     console.error("Invalid input:", { area, quantityNumber });
     return res.status(400).json({ error: "Invalid area or quantity." });
   }
 
   try {
-    // Fetch available seats from the model
     const seats = await SeatModel.checkAvailableSeats(area, quantityNumber);
 
     let response;
@@ -36,7 +34,7 @@ exports.getAvailableSeats = async (req, res) => {
       };
     }
 
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error checking seats:", error.message);
     res
@@ -54,12 +52,12 @@ exports.holdSeats = async (req, res) => {
       return res.status(400).json({ error: "No seats selected." });
     }
 
-    await SeatModel.holdSeats(seatIds, memberId);
+    await SeatModel.holdSeats(seatIds, memberId); //更改座位狀態
 
-    // 獲取已保留座位的詳細信息
+    // 已保留座位的info
     const heldSeatsDetails = await SeatModel.getHeldSeatsDetails(seatIds);
 
-    res.json({
+    res.status(200).json({
       message: "Seats held successfully.",
       seats: heldSeatsDetails,
     });
@@ -72,7 +70,7 @@ exports.reserveSeats = async (req, res) => {
   try {
     const { seatIds, orderNumber } = req.body;
 
-    // 在確認前，檢查座位是否為 temporary_hold
+    // 訂購前，檢查座位是否為 temporary_hold
     const heldSeats = await SeatModel.checkSeatsStatus(seatIds);
 
     if (heldSeats.length !== seatIds.length) {
@@ -82,7 +80,7 @@ exports.reserveSeats = async (req, res) => {
     }
 
     await SeatModel.reserveSeats(seatIds, orderNumber);
-    res.send("Seats reserved successfully.");
+    res.status(200).send("Seats reserved successfully.");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -92,7 +90,7 @@ exports.releaseSeats = async (req, res) => {
   try {
     const userId = req.user.id;
     await SeatModel.releaseSeats(userId);
-    res.send("Seats released successfully.");
+    res.status(200).send("Seats released successfully.");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -104,7 +102,7 @@ exports.getLockedSeats = async (req, res) => {
 
     const lockedSeats = await SeatModel.getLockedSeatsByMemberId(memberId);
 
-    res.json({
+    res.status(200).json({
       event_id: lockedSeats.length > 0 ? lockedSeats[0].event_id : null,
       seats: lockedSeats,
     });
@@ -138,7 +136,7 @@ exports.cancelHold = async (req, res) => {
 
     // 取消暫時保留，將座位狀態設置為 available
     await SeatModel.releaseSeats(seatIds);
-    res.send("Hold canceled successfully.");
+    res.status(200).send("Hold canceled successfully.");
   } catch (error) {
     console.error("Error canceling hold:", error.message);
     res
@@ -156,7 +154,7 @@ exports.getSeatIds = async (req, res) => {
 
   try {
     const seatIds = await SeatModel.findSeatIdsByDetails(area, seats);
-    res.json({ seatIds });
+    res.status(200).json({ seatIds });
   } catch (error) {
     console.error("Error getting seat IDs:", error.message);
     res
@@ -170,7 +168,7 @@ exports.getSeatsForEvent = async (req, res) => {
 
   try {
     const seats = await SeatModel.seatIdforSeatDiagramByEventId(eventId);
-    res.json(seats);
+    res.status(200).json(seats);
   } catch (error) {
     console.error("Error fetching seats:", error);
     res.status(500).json({ error: "Failed to fetch seats" });

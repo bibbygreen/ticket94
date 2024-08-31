@@ -1,4 +1,3 @@
-//orderController.js
 const SeatModel = require("../models/seatModel");
 const OrderModel = require("../models/orderModel");
 const db = require("../config/dbConfig");
@@ -73,7 +72,7 @@ exports.createOrder = async (req, res) => {
 
     const tapPayResult = await tapPayResponse.json();
     if (tapPayResult.status === 0) {
-      paymentStatus = 1; // 成功
+      paymentStatus = 1;
       paymentMessage = "付款成功";
     } else {
       paymentMessage = `付款失敗: ${tapPayResult.msg}`;
@@ -95,7 +94,7 @@ exports.createOrder = async (req, res) => {
     if (heldSeats.length !== seatIds.length) {
       return res
         .status(400)
-        .json({ error: "Some seats are no longer available." });
+        .json({ error: true, message: "Some seats are no longer available." });
     }
 
     await SeatModel.reserveSeats(seatIds, orderNumber);
@@ -145,7 +144,7 @@ exports.createIbonOrder = async (req, res) => {
     if (heldSeats.length !== seatIds.length) {
       return res
         .status(400)
-        .json({ error: "Some seats are no longer available." });
+        .json({ error: true, message: "Some seats are no longer available." });
     }
 
     // 更新座位狀態為 T，並設定 hold_expire_at
@@ -158,7 +157,7 @@ exports.createIbonOrder = async (req, res) => {
       orderNumber
     );
 
-    // 創建訂單並儲存到資料庫
+    // 建立訂單並儲存到資料庫
     const orderId = await OrderModel.createOrder(
       userId,
       orderNumber,
@@ -239,6 +238,6 @@ exports.getOrderHistory = async (req, res) => {
     res.status(200).json(orders);
   } catch (error) {
     console.error("Error fetching order history:", error);
-    res.status(500).json({ error: "無法取得訂單紀錄" });
+    res.status(500).json({ error: true, message: "無法取得訂單紀錄" });
   }
 };
