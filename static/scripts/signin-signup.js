@@ -57,7 +57,6 @@ export async function checkSigninStatus() {
 
     const userData = await response.json();
     cachedUserData = userData;
-    // console.log("User is logged in:", userData);
   } catch (error) {
     console.error("User not logged in or token invalid:", error);
     window.location.href = "/";
@@ -148,7 +147,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// 處理登入表單提交
 const signInForm = document.getElementById("signInForm");
 if (signInForm) {
   signInForm.addEventListener("submit", async function (event) {
@@ -175,7 +173,7 @@ if (signInForm) {
           window.location.href = "/";
         }, 2000);
       } else {
-        showToast("登入失敗：" + data.error);
+        showToast("登入失敗：" + data.message);
       }
     } catch (error) {
       console.error("發生錯誤：", error);
@@ -184,7 +182,6 @@ if (signInForm) {
   });
 }
 
-// 處理註冊表單提交
 const signUpForm = document.getElementById("signUpForm");
 if (signUpForm) {
   signUpForm.addEventListener("submit", async function (event) {
@@ -212,7 +209,7 @@ if (signUpForm) {
           window.location.href = "/signin";
         }, 2000);
       } else {
-        showToast("註冊失敗：" + data.error);
+        showToast("註冊失敗：" + data.message);
       }
     } catch (error) {
       console.error("發生錯誤：", error);
