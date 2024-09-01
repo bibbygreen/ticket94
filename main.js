@@ -37,6 +37,10 @@ app.use("/api", orderRoutes);
 app.use("/api", historyRoutes);
 app.use("/node_modules", express.static(__dirname + "/node_modules"));
 
+app.get("/loaderio-784b0f7ef89615181f4a079f5395d350.html", function (req, res) {
+  res.send("loaderio-784b0f7ef89615181f4a079f5395d350");
+});
+
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/static/index.html");
 });
