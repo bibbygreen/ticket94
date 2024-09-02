@@ -1,19 +1,19 @@
 const mysql = require("mysql2");
 
-// const connection = mysql.createConnection({
-//   host: process.env.DB_HOST,
-//   user: process.env.DB_USER,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DB_NAME,
-//   port: 3306,
-// });
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "ticket94",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   port: 3306,
 });
+// const connection = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "root",
+//   database: "ticket94",
+//   port: 3306,
+// });
 
 // Connect to the database
 connection.connect((err) => {
@@ -50,7 +50,7 @@ function createTables() {
       CREATE TABLE IF NOT EXISTS seats (
         id INT AUTO_INCREMENT PRIMARY KEY,
         seat_num VARCHAR(10) NOT NULL,
-        status ENUM('V', 'T', 'R') NOT NULL DEFAULT 'V',
+        status ENUM('V', 'T', 'R', 'I') NOT NULL DEFAULT 'V',
         row_id INT NOT NULL,
         member_id BIGINT NULL,
         hold_expires_at DATETIME NULL, 

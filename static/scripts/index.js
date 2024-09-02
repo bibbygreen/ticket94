@@ -102,8 +102,9 @@ function initializeSlider() {
 
 const tem_images = [
   "https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg",
-  "https://t.kfs.io/upload_images/208325/IMG_0654_medium.jpeg",
-  "https://t.kfs.io/upload_images/208106/GI_1200x630_medium.jpg",
+  "https://i.ytimg.com/vi/n5Fak2-UOaE/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBy63F8GUkKjknwXR85RXht3zugNA",
+  "https://t.kfs.io/upload_images/207222/KKTIX-YYW-1200x630_large.jpg",
+  "https://static.tixcraft.com/images/activity/24_mel_7ab87c8f1c05489a43d84bade8461159.jpg",
   "https://www.legacy.com.tw/uploads/image_library/1469005927.jpg",
   "https://t.kfs.io/upload_images/209030/_Ticket_Site__Main_KV_02_1200x630_TAIWAN_large.jpg",
 ];
