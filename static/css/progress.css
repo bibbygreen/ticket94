@@ -7,12 +7,12 @@
   position: relative;
   margin:auto;
   max-width: 1200px;
-  padding-top: 30px;
+  padding-top: 10px;
 }
 
 .purchaseProgress .progress-track {
   position: absolute;
-  top: 78px;
+  top: 58px;
   left: calc(10% + 15px);
   right: calc(10% + 15px); 
   height: 5px;

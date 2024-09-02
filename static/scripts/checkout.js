@@ -1,9 +1,23 @@
 import { fetchMemberData, requireAuth } from "./signin-signup.js";
 import { activateStep } from "./progress.js";
 
+function formatDateTime(date) {
+  return new Intl.DateTimeFormat("zh-TW", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "Asia/Taipei", // 指定轉換的時區
+    hour12: false, // 24 小時制
+  }).format(date);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   requireAuth();
   activateStep(2);
+  startCountdown();
 
   let seatIds = [];
   let totalPrice = 0;
@@ -23,18 +37,33 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((data) => {
       const seatData = data.seats;
+
       if (seatData && seatData.length > 0) {
         seatIds = seatData.map((seat) => seat.id);
         displaySummaryTable(seatData);
+        const holdExpiresAtString = seatData[0].hold_expires_At;
+        const holdExpiresAt = new Date(Date.parse(holdExpiresAtString));
+        const now = new Date();
+        // console.log(holdExpiresAtString);
+        // console.log("Hold Expires At:", holdExpiresAt);
+        // console.log("Current Time:", now);
+
+        let timeLeft = Math.floor((holdExpiresAt - now) / 1000);
+        console.log("timeLeft:", timeLeft);
+        if (timeLeft > 0) {
+          startCountdown(timeLeft);
+        } else {
+          alert("您的訂單已逾期");
+        }
       } else {
         document.getElementById("summary-container").innerHTML =
-          "<p>No selection found.</p>";
+          "<p>尚未選擇任何座位。</p>";
       }
     })
     .catch((error) => {
-      console.error("Error fetching locked seats:", error);
+      console.error("獲取座位時發生錯誤", error);
       document.getElementById("summary-container").innerHTML =
-        "<p>Error fetching seat data.</p>";
+        "<p>獲取座位資訊時發生錯誤。</p>";
     });
 
   function displaySummaryTable(seats) {
@@ -71,6 +100,30 @@ document.addEventListener("DOMContentLoaded", () => {
         </tbody>
       </table>
     `;
+  }
+
+  function startCountdown(timeLeft) {
+    const timerElement = document.getElementById("timer");
+
+    const interval = setInterval(() => {
+      if (timeLeft < 0) {
+        clearInterval(interval);
+        timerElement.textContent = "00:00";
+        alert("逾時繳費，訂單已取消");
+        window.location.href = "/";
+        return;
+      }
+
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      if (!isNaN(minutes) && !isNaN(seconds)) {
+        timerElement.textContent = `${minutes}:${
+          seconds < 10 ? "0" : ""
+        }${seconds}`;
+      }
+
+      timeLeft--;
+    }, 1000);
   }
 
   fetchMemberData()

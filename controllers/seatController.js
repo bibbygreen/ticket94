@@ -8,7 +8,9 @@ exports.getAvailableSeats = async (req, res) => {
 
   if (!area || typeof quantityNumber !== "number" || quantityNumber <= 0) {
     console.error("Invalid input:", { area, quantityNumber });
-    return res.status(400).json({ error: "Invalid area or quantity." });
+    return res
+      .status(400)
+      .json({ error: true, message: "Invalid area or quantity." });
   }
 
   try {
@@ -39,7 +41,10 @@ exports.getAvailableSeats = async (req, res) => {
     console.error("Error checking seats:", error.message);
     res
       .status(500)
-      .json({ error: "An error occurred while checking available seats." });
+      .json({
+        error: true,
+        message: "An error occurred while checking available seats.",
+      });
   }
 };
 
@@ -49,7 +54,9 @@ exports.holdSeats = async (req, res) => {
     const memberId = req.user.id;
 
     if (!seatIds || seatIds.length === 0) {
-      return res.status(400).json({ error: "No seats selected." });
+      return res
+        .status(400)
+        .json({ error: true, message: "No seats selected." });
     }
 
     await SeatModel.holdSeats(seatIds, memberId); //更改座位狀態
@@ -62,7 +69,7 @@ exports.holdSeats = async (req, res) => {
       seats: heldSeatsDetails,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, message: error.message });
   }
 };
 
@@ -76,13 +83,13 @@ exports.reserveSeats = async (req, res) => {
     if (heldSeats.length !== seatIds.length) {
       return res
         .status(400)
-        .json({ error: "Some seats are no longer available." });
+        .json({ error: true, message: "Some seats are no longer available." });
     }
 
     await SeatModel.reserveSeats(seatIds, orderNumber);
     res.status(200).send("Seats reserved successfully.");
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, message: error.message });
   }
 };
 
@@ -92,7 +99,7 @@ exports.releaseSeats = async (req, res) => {
     await SeatModel.releaseSeats(userId);
     res.status(200).send("Seats released successfully.");
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, message: error.message });
   }
 };
 
@@ -110,7 +117,10 @@ exports.getLockedSeats = async (req, res) => {
     console.error("Error fetching locked seats:", error.message);
     res
       .status(500)
-      .json({ error: "An error occurred while fetching locked seats." });
+      .json({
+        error: true,
+        message: "An error occurred while fetching locked seats.",
+      });
   }
 };
 
@@ -129,7 +139,8 @@ exports.cancelHold = async (req, res) => {
 
     if (validSeatIds.length !== seatIds.length) {
       return res.status(400).json({
-        error:
+        error: true,
+        message:
           "Some seats are not held by this user or are not in hold status.",
       });
     }
@@ -141,7 +152,10 @@ exports.cancelHold = async (req, res) => {
     console.error("Error canceling hold:", error.message);
     res
       .status(500)
-      .json({ error: "An error occurred while canceling the hold." });
+      .json({
+        error: true,
+        message: "An error occurred while canceling the hold.",
+      });
   }
 };
 
@@ -149,7 +163,9 @@ exports.getSeatIds = async (req, res) => {
   const { area, seats } = req.body;
 
   if (!area || !seats || !Array.isArray(seats) || seats.length === 0) {
-    return res.status(400).json({ error: "Invalid area or seats data." });
+    return res
+      .status(400)
+      .json({ error: true, message: "Invalid area or seats data." });
   }
 
   try {
@@ -159,7 +175,10 @@ exports.getSeatIds = async (req, res) => {
     console.error("Error getting seat IDs:", error.message);
     res
       .status(500)
-      .json({ error: "An error occurred while getting seat IDs." });
+      .json({
+        error: true,
+        message: "An error occurred while getting seat IDs.",
+      });
   }
 };
 
@@ -171,6 +190,6 @@ exports.getSeatsForEvent = async (req, res) => {
     res.status(200).json(seats);
   } catch (error) {
     console.error("Error fetching seats:", error);
-    res.status(500).json({ error: "Failed to fetch seats" });
+    res.status(500).json({ error: true, message: "Failed to fetch seats" });
   }
 };

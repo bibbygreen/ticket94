@@ -22,16 +22,28 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((data) => {
       const seatData = data.seats;
+
       if (seatData && seatData.length > 0) {
         seatIds = seatData.map((seat) => seat.id);
         displaySummaryTable(seatData);
+        const holdExpiresAtString = seatData[0].hold_expires_At;
+        const holdExpiresAt = new Date(Date.parse(holdExpiresAtString));
+        const now = new Date();
+
+        let timeLeft = Math.floor((holdExpiresAt - now) / 1000);
+        console.log("timeLeft:", timeLeft);
+        if (timeLeft > 0) {
+          startCountdown(timeLeft);
+        } else {
+          alert("您的訂單已逾期");
+        }
       } else {
         document.getElementById("summary-container").innerHTML =
-          "<p>無座位選擇。</p>";
+          "<p>尚未選擇任何座位。</p>";
       }
     })
     .catch((error) => {
-      console.error("獲取鎖定座位時出錯：", error);
+      console.error("獲取座位時發生錯誤：", error);
       document.getElementById("summary-container").innerHTML =
         "<p>獲取座位資訊時發生錯誤。</p>";
     });
@@ -79,6 +91,30 @@ document.addEventListener("DOMContentLoaded", () => {
   script.async = true;
   script.onload = setupTPDirectSDK;
   document.head.appendChild(script);
+
+  function startCountdown(timeLeft) {
+    const timerElement = document.getElementById("timer");
+
+    const interval = setInterval(() => {
+      if (timeLeft < 0) {
+        clearInterval(interval);
+        timerElement.textContent = "00:00";
+        alert("逾時繳費，訂單已取消");
+        window.location.href = "/";
+        return;
+      }
+
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      if (!isNaN(minutes) && !isNaN(seconds)) {
+        timerElement.textContent = `${minutes}:${
+          seconds < 10 ? "0" : ""
+        }${seconds}`;
+      }
+
+      timeLeft--;
+    }, 1000);
+  }
 
   function displaySummaryTable(seats) {
     let totalPrice = 0;
