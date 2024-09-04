@@ -214,19 +214,31 @@ header{
   cursor: pointer;
 }
 
-.event-box img {
+/* .event-box img {
   max-height: 300px;
   width: 500px;
   display: block;
   margin-left: auto;
   margin-right: auto;
+} */
+.event-box img {
+  width: 100%;            /* 確保圖片寬度佔滿容器 */
+  height: 280px;          /* 固定圖片高度 */
+  object-fit: contain;    /* 確保圖片按比例縮放，且圖片較小時保持上下留白 */
+  display: block;         /* 圖片居中顯示 */
 }
 
 .div-event-title {
   font-weight: bold;
   font-size: 16px;
-  padding: 5px;
+  margin: 5px;
   word-wrap: break-word;
+}
+
+.div-event-date {
+  font-size: 14px;
+  word-wrap: break-word;
+  margin: 5px;
 }
 
 .event-box.inactive {

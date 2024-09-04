@@ -43,9 +43,9 @@ exports.holdSeats = async (seatIds, memberId) => {
   }
 }; //seatController.holdSeats
 
-exports.releaseSeats = (userId) => {
+exports.releaseSeats = (memberId) => {
   const sql = `UPDATE seats SET status = 'V', member_id = NULL, hold_expires_at = NULL WHERE member_id = ? AND status = 'T'`;
-  return db.query(sql, [userId]);
+  return db.query(sql, [memberId]);
 }; //seatController.cancelHold
 
 exports.reserveSeats = (seatIds, orderNumber) => {

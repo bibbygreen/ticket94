@@ -1,4 +1,8 @@
-import { verifyUserSignInToken, showToast } from "./signin-signup.js";
+import {
+  isTokenExpired,
+  verifyUserSignInToken,
+  showToast,
+} from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab");
@@ -6,6 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const navbarHeight = document.querySelector(".tabs").offsetHeight;
 
   let eventId;
+
+  if (token) {
+    if (isTokenExpired(token)) {
+      showToast("您的登入已過期，請重新登入");
+      localStorage.removeItem("token");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    }
+  }
 
   // Extract attraction ID from URL
   const href = location.href;

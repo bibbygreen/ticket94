@@ -3,13 +3,13 @@ const historyModel = require("../models/historyModel");
 
 exports.getHistoryOrderInfo = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const memberId = req.user.id;
 
-    if (!userId) {
+    if (!memberId) {
       return res.status(400).json({ error: "user_id is required" });
     }
 
-    const results = await historyModel.fetchHistoryOrders(userId);
+    const results = await historyModel.fetchHistoryOrders(memberId);
 
     const orders = {};
 

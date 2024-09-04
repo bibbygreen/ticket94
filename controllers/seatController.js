@@ -39,12 +39,10 @@ exports.getAvailableSeats = async (req, res) => {
     res.status(200).json(response);
   } catch (error) {
     console.error("Error checking seats:", error.message);
-    res
-      .status(500)
-      .json({
-        error: true,
-        message: "An error occurred while checking available seats.",
-      });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while checking available seats.",
+    });
   }
 };
 
@@ -95,8 +93,8 @@ exports.reserveSeats = async (req, res) => {
 
 exports.releaseSeats = async (req, res) => {
   try {
-    const userId = req.user.id;
-    await SeatModel.releaseSeats(userId);
+    const memberId = req.user.id;
+    await SeatModel.releaseSeats(memberId);
     res.status(200).send("Seats released successfully.");
   } catch (error) {
     res.status(500).json({ error: true, message: error.message });
@@ -115,12 +113,10 @@ exports.getLockedSeats = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching locked seats:", error.message);
-    res
-      .status(500)
-      .json({
-        error: true,
-        message: "An error occurred while fetching locked seats.",
-      });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while fetching locked seats.",
+    });
   }
 };
 
@@ -150,12 +146,10 @@ exports.cancelHold = async (req, res) => {
     res.status(200).send("Hold canceled successfully.");
   } catch (error) {
     console.error("Error canceling hold:", error.message);
-    res
-      .status(500)
-      .json({
-        error: true,
-        message: "An error occurred while canceling the hold.",
-      });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while canceling the hold.",
+    });
   }
 };
 
@@ -173,12 +167,10 @@ exports.getSeatIds = async (req, res) => {
     res.status(200).json({ seatIds });
   } catch (error) {
     console.error("Error getting seat IDs:", error.message);
-    res
-      .status(500)
-      .json({
-        error: true,
-        message: "An error occurred while getting seat IDs.",
-      });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while getting seat IDs.",
+    });
   }
 };
 

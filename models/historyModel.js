@@ -1,7 +1,7 @@
 //historyModel
 const db = require("../config/dbConfig");
 
-exports.fetchHistoryOrders = async (userId) => {
+exports.fetchHistoryOrders = async (memberId) => {
   const query = `
     SELECT 
       event_lists.eventName,
@@ -28,6 +28,6 @@ exports.fetchHistoryOrders = async (userId) => {
     ORDER BY orders.created_time DESC
   `;
 
-  const [results] = await db.execute(query, [userId]);
+  const [results] = await db.execute(query, [memberId]);
   return results;
 };

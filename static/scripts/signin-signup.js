@@ -10,6 +10,21 @@ export function requireAuth(redirectTo = "/") {
   return true;
 }
 
+export function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    // JWT exp 是以秒為單位的 UNIX
+    const expiryTime = payload.exp * 1000;
+    const currentTime = Date.now();
+
+    return currentTime > expiryTime;
+  } catch (error) {
+    console.error("解析 Token 發生錯誤：", error);
+    return true; // 如果無法解析 Token，視為過期
+  }
+}
+
 export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
 

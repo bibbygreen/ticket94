@@ -111,8 +111,8 @@ html, body {
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 5px;
+  min-width: 42px;
+  text-align: right;
 }
 
 .form-group input {
@@ -120,7 +120,11 @@ html, body {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin-left: 10px;
+  margin-left: 6px;
+}
+
+.signin-notes{
+  color: #4c4c4c;
 }
 
 .auth-button {
