@@ -5,7 +5,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 const generateToken = (user) => {
   return jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
-    expiresIn: "2m",
+    expiresIn: "3h",
   }); // Token expires in 1 hour
 };
 

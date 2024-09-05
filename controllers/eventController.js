@@ -39,3 +39,20 @@ exports.getEventById = async (req, res) => {
     res.status(500).json({ error: true, message: error.message });
   }
 };
+
+exports.getEventSections = async (req, res) => {
+  try {
+    const { id } = req.params; // 從 URL 參數獲取 event_id
+    const sections = await eventModel.getEventSectionsById(id);
+
+    if (sections.length === 0) {
+      return res
+        .status(404)
+        .json({ error: true, message: "No sections found for this event" });
+    }
+
+    res.json({ sections });
+  } catch (error) {
+    res.status(500).json({ error: true, message: error.message });
+  }
+};

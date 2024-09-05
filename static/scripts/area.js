@@ -8,6 +8,86 @@ let selectedSeatsData = [];
 
 const ticketOptionsContainer = document.getElementById("ticket-options");
 
+export async function fetchEvent(id) {
+  const url = `/api/events/${id}`;
+  try {
+    const response = await fetch(url, { method: "GET" });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    renderEvent(data);
+  } catch (error) {
+    console.error("There has been a problem with your fetch operation:", error);
+  }
+}
+
+export function renderEvent(event) {
+  const eventProfile = document.querySelector(".event-profile");
+
+  const eventImage = eventProfile.querySelector(".event-image img");
+  eventImage.src = event.pic || "default-image.jpg";
+
+  const eventDetails = eventProfile.querySelector(".event-details");
+  eventDetails.querySelector("h2").textContent = event.eventName;
+  eventDetails.querySelector(
+    "p:nth-of-type(1)"
+  ).textContent = `Date: ${event.date}`;
+  eventDetails.querySelector(
+    "p:nth-of-type(2)"
+  ).textContent = `Time: ${event.time}`;
+  eventDetails.querySelector(
+    "p:nth-of-type(3)"
+  ).textContent = `Location: ${event.location}`;
+}
+
+async function fetchEventSections(eventId) {
+  try {
+    const response = await fetch(`/api/events/${eventId}/sections`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch event sections");
+    }
+    const data = await response.json();
+    console.log("API response:", data.sections.sections);
+    const sections = data.sections.sections;
+
+    if (!Array.isArray(sections)) {
+      throw new Error("Sections data is not an array");
+    }
+
+    const areaOptions = document.querySelector(".area-options");
+    areaOptions.innerHTML = "<h2>票區一覽</h2>";
+
+    sections.forEach((section) => {
+      const areaDiv = document.createElement("div");
+      areaDiv.classList.add("area");
+      areaDiv.setAttribute("data-area", section.section_name);
+
+      const areaNameSpan = document.createElement("span");
+      areaNameSpan.classList.add("area-name");
+      areaNameSpan.textContent = `${section.section_name}區`;
+
+      const areaPriceSpan = document.createElement("span");
+      areaPriceSpan.classList.add("area-price");
+      areaPriceSpan.textContent = `NT ${section.price.toLocaleString()}元`;
+
+      areaDiv.appendChild(areaNameSpan);
+      areaDiv.appendChild(areaPriceSpan);
+      areaOptions.appendChild(areaDiv);
+    });
+  } catch (error) {
+    console.error("Error fetching event sections:", error);
+  }
+}
+
 function displayTicketOptions(areaId, price) {
   ticketOptionsContainer.innerHTML = `
     <h2>選擇座位</h2>
@@ -73,7 +153,7 @@ async function fetchAvailableSeats(area, quantity) {
   return data;
 }
 
-// 根據事件 ID 獲取座位信息
+// 根據活動 ID 獲取座位
 async function fetchSeatsForArea(areaName) {
   try {
     const response = await fetch(`/api/seats/${eventId}?area=${areaName}`);
@@ -342,20 +422,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   checkSigninStatus();
 
   eventId = getEventIdFromUrl();
+  await fetchEvent(eventId);
+  await fetchEventSections(eventId);
 
-  const areas = document.querySelectorAll(".area");
+  // 使用事件委託，監聽動態生成的區域元素的點擊事件
+  const areaOptions = document.querySelector(".area-options");
+  areaOptions.addEventListener("click", (event) => {
+    const area = event.target.closest(".area");
+    if (!area) return; // 如果點擊的不是區域，則返回
 
-  areas.forEach((area) => {
-    area.addEventListener("click", () => {
-      selectedAreaName = area.getAttribute("data-area");
-      selectedAreaPrice = parseInt(
-        area.querySelector(".area-price").textContent.replace(/\D/g, ""),
-        10
-      );
-      displayTicketOptions(selectedAreaName, selectedAreaPrice);
-      areas.forEach((a) => a.classList.remove("selected"));
-      area.classList.add("selected");
-    });
+    selectedAreaName = area.getAttribute("data-area");
+    selectedAreaPrice = parseInt(
+      area.querySelector(".area-price").textContent.replace(/\D/g, ""),
+      10
+    );
+    displayTicketOptions(selectedAreaName, selectedAreaPrice);
+
+    document
+      .querySelectorAll(".area")
+      .forEach((a) => a.classList.remove("selected"));
+    area.classList.add("selected");
   });
 });
 

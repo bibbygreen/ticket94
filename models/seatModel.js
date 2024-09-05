@@ -173,7 +173,7 @@ exports.findSeatIdsByDetails = async (area, seats) => {
 
 exports.getSeatsByOrderNumber = async (orderNumber) => {
   const sql = `
-    SELECT sections.section_name, seating_rows.row_num, seats.seat_num AS number, sections.price
+    SELECT sections.section_name, seating_rows.row_num, seats.seat_num AS number, sections.price, sections.event_id
     FROM seats
     JOIN seating_rows ON seats.row_id = seating_rows.id
     JOIN sections ON seating_rows.section_id = sections.id

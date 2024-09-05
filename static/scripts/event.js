@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab");
   const tabContents = document.querySelectorAll(".tab-content");
   const navbarHeight = document.querySelector(".tabs").offsetHeight;
+  const token = localStorage.getItem("token");
 
   let eventId;
 

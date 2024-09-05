@@ -1,19 +1,19 @@
 const mysql = require("mysql2");
 
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: 3306,
-});
 // const connection = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "root",
-//   database: "ticket94",
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
 //   port: 3306,
 // });
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "ticket94",
+  port: 3306,
+});
 
 // Connect to the database
 connection.connect((err) => {
@@ -91,10 +91,10 @@ function createTables() {
 async function insertData() {
   try {
     const sections = [
-      { name: "A", price: 3000, eventId: 1 }, // 示例：eventId 設為 1
-      { name: "B", price: 3000, eventId: 1 },
-      { name: "C", price: 2500, eventId: 1 },
-      { name: "D", price: 2500, eventId: 1 },
+      { name: "A", price: 3000, eventId: 8 }, // 示例：eventId 設為 1
+      { name: "B", price: 3000, eventId: 8 },
+      { name: "C", price: 2500, eventId: 8 },
+      { name: "D", price: 2500, eventId: 8 },
     ];
 
     const sectionIds = await Promise.all(
