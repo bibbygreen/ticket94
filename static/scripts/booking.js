@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cancelButton.addEventListener("click", () => {
       // 釋放所有座位
       fetch("/api/seats/release", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

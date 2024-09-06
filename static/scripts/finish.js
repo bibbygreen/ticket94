@@ -65,8 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (seats && seats.length > 0) {
         displaySummaryTable(seats, order);
 
-        const eventId = seats[0].event_id; // 假設所有座位的 event_id 相同
-        console.log("Event ID:", eventId);
+        const eventId = seats[0].event_id;
         fetchEvent(eventId);
       } else {
         document.getElementById("summary-container").innerHTML =

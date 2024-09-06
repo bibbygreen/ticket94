@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cancelButton) {
     cancelButton.addEventListener("click", () => {
       fetch("/api/seats/release", {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

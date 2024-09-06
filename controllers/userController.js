@@ -112,7 +112,7 @@ exports.updatePhone = async (req, res) => {
     }
 
     await UserModel.updateUserPhone(userId, phone);
-    res.json({ message: "手機號碼更新成功" });
+    res.status(200).json({ message: "手機號碼更新成功" });
   } catch (error) {
     res.status(500).json({ error: true, message: error.message });
   }
@@ -135,7 +135,7 @@ exports.updatePassword = async (req, res) => {
     }
 
     await UserModel.updateUserPassword(userId, newPassword);
-    res.json({ message: "Password updated successfully" });
+    res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
     console.error("Error updating password:", error);
     res.status(500).json({ error: true, message: error.message });

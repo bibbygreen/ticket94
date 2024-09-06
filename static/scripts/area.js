@@ -56,7 +56,6 @@ async function fetchEventSections(eventId) {
       throw new Error("Failed to fetch event sections");
     }
     const data = await response.json();
-    console.log("API response:", data.sections.sections);
     const sections = data.sections.sections;
 
     if (!Array.isArray(sections)) {
@@ -153,7 +152,7 @@ async function fetchAvailableSeats(area, quantity) {
   return data;
 }
 
-// 根據活動 ID 獲取座位
+// 根據活動 ID 取得座位
 async function fetchSeatsForArea(areaName) {
   try {
     const response = await fetch(`/api/seats/${eventId}?area=${areaName}`);
@@ -192,7 +191,7 @@ async function autoSelectSeats(area, quantity) {
   try {
     const token = localStorage.getItem("token");
     const response = await fetch("/api/seats/hold", {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -271,7 +270,7 @@ async function showSeatDiagramModal(areaName, quantity, price) {
         const seatIds = selectedSeatsData.map((seat) => seat.id);
 
         const response = await fetch("/api/seats/hold", {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

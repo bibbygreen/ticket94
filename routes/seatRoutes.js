@@ -9,8 +9,8 @@ router.get(
   verifyToken,
   seatController.getAvailableSeats
 );
-router.post("/seats/hold", verifyToken, seatController.holdSeats);
-router.post("/seats/release", verifyToken, seatController.releaseSeats);
+router.put("/seats/hold", verifyToken, seatController.holdSeats);
+router.put("/seats/release", verifyToken, seatController.releaseSeats);
 router.get("/seats/locked", verifyToken, seatController.getLockedSeats);
 router.get("/seats/:eventId", seatController.getSeatsForEvent);
 
