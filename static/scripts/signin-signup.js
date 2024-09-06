@@ -171,7 +171,7 @@ if (signInForm) {
     const password = document.getElementById("signin-password").value;
 
     try {
-      const response = await fetch("/api/auth", {
+      const response = await fetch("/api/users/auth", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
