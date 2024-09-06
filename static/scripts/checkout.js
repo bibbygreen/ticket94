@@ -52,9 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const holdExpiresAtString = seatData[0].hold_expires_At;
         const holdExpiresAt = new Date(Date.parse(holdExpiresAtString));
         const now = new Date();
-        // console.log(holdExpiresAtString);
-        // console.log("Hold Expires At:", holdExpiresAt);
-        // console.log("Current Time:", now);
 
         let timeLeft = Math.floor((holdExpiresAt - now) / 1000);
         console.log("timeLeft:", timeLeft);

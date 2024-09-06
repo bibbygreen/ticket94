@@ -63,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .value.trim();
       const newPassword = document.getElementById("new-password").value.trim();
 
-      // 檢查 currentPassword 和 newPassword 是否都有值
       if (!currentPassword || !newPassword) {
         alert("請填寫所有欄位");
         return;

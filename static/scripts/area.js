@@ -88,10 +88,6 @@ function displayTicketOptions(areaId, price) {
       const optionValue = selectedOption.value;
 
       if (optionValue === "manual") {
-        // const availableSeats = await fetchAvailableSeats(
-        //   selectedAreaName,
-        //   quantity
-        // );
         showSeatDiagramModal(selectedAreaName, quantity, selectedAreaPrice);
       } else if (optionValue === "auto") {
         autoSelectSeats(selectedAreaName, quantity);
@@ -136,7 +132,6 @@ async function fetchSeatsForArea(areaName) {
 
 async function autoSelectSeats(area, quantity) {
   const data = await fetchAvailableSeats(area, quantity);
-  console.log("Fetched Data:", data); // Log the full data including area and seats
 
   if (!data.available || data.seats.length === 0) {
     alert("No seats available");
@@ -150,7 +145,6 @@ async function autoSelectSeats(area, quantity) {
     price: seat.price,
     area: data.area,
   }));
-  console.log("Seat Details to hold:", seatDetails); // Log full seat details
 
   const seatIds = seatDetails.map((seat) => seat.id);
 
@@ -390,7 +384,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await fetchEvent(eventId);
   await fetchEventSections(eventId);
 
-  // 使用事件委託，監聽動態生成的區域元素的點擊事件
   const areaOptions = document.querySelector(".area-options");
   areaOptions.addEventListener("click", (event) => {
     const area = event.target.closest(".area");

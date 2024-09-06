@@ -4,15 +4,12 @@ export function activateStep(stepNum) {
 
   steps.forEach((step, index) => {
     if (index < stepNum - 1) {
-      // 完成的步驟
       step.classList.add("completed");
       step.classList.remove("active");
     } else if (index === stepNum - 1) {
-      // 當前步驟
       step.classList.add("active");
       step.classList.add("completed");
     } else {
-      // 未完成的步驟
       step.classList.remove("active");
       step.classList.remove("completed");
     }

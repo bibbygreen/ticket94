@@ -22,9 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Extract attraction ID from URL
   const href = location.href;
-  // const pattern = /^https?:\/\/.+\/event\/(\d+)/;
   const pattern = /\/event\/(\d+)/;
   const match = href.match(pattern);
   if (match) {
@@ -122,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
     </table>
   `;
 
-    // Update "活動介紹" tab content
     tabContentIntroduction.innerHTML = `
       <h2>活動介紹</h2>
       <br>
@@ -173,7 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       console.error("Error checking user sign-in status:", error);
-      // Optionally handle error (e.g., show an error message to the user)
     }
   }
   // Add event listener to all buy buttons
