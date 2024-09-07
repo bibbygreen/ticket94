@@ -1,17 +1,17 @@
 // seatModel.js
 const db = require("../config/dbConfig");
 
-exports.checkAvailableSeats = async (area, quantityNumber) => {
+exports.checkAvailableSeats = async (eventId, area, quantityNumber) => {
   try {
     const [seats] = await db.query(
       `SELECT seats.id, seats.seat_num AS number, seating_rows.row_num AS row_num, sections.price, sections.event_id
       FROM seats
       JOIN seating_rows ON seats.row_id = seating_rows.id
       JOIN sections ON seating_rows.section_id = sections.id
-      WHERE sections.section_name = ?
+      WHERE sections.event_id = ? AND sections.section_name = ?
       AND seats.status = 'V'
       LIMIT ?`,
-      [area, quantityNumber]
+      [eventId, area, quantityNumber]
     );
     return seats;
   } catch (error) {
@@ -19,7 +19,7 @@ exports.checkAvailableSeats = async (area, quantityNumber) => {
   }
 }; //seatController.getAvailableSeats
 
-exports.holdSeats = async (seatIds, memberId) => {
+exports.holdSeats = async (seatIds, memberId, eventId) => {
   try {
     if (!seatIds || seatIds.length === 0) {
       throw new Error("No seats selected.");
@@ -27,14 +27,16 @@ exports.holdSeats = async (seatIds, memberId) => {
 
     const placeholders = seatIds.map(() => "?").join(", ");
     const sql = `UPDATE seats 
-                 SET status = 'T', 
-                     member_id = ?, 
-                     hold_expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE) 
-                 WHERE id IN (${placeholders}) AND status = 'V'`;
+                JOIN seating_rows ON seats.row_id = seating_rows.id
+                JOIN sections ON seating_rows.section_id = sections.id
+                SET status = 'T', 
+                    member_id = ?, 
+                    hold_expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE)
+                WHERE seats.id IN (${placeholders}) AND status = 'V' AND sections.event_id = ?`;
 
     // console.log("With memberId:", memberId, "and seatIds:", seatIds);
 
-    const [results] = await db.query(sql, [memberId, ...seatIds]);
+    const [results] = await db.query(sql, [memberId, ...seatIds, eventId]);
 
     return results;
   } catch (error) {
@@ -42,6 +44,26 @@ exports.holdSeats = async (seatIds, memberId) => {
     throw error;
   }
 }; //seatController.holdSeats
+
+exports.getHeldSeatsDetails = async (seatIds) => {
+  const placeholders = seatIds.map(() => "?").join(", ");
+
+  const sql = `
+    SELECT seats.id, seats.seat_num AS number, seating_rows.row_num, sections.section_name, sections.price
+    FROM seats
+    JOIN seating_rows ON seats.row_id = seating_rows.id
+    JOIN sections ON seating_rows.section_id = sections.id
+    WHERE seats.id IN (${placeholders})
+  `;
+
+  try {
+    const [results] = await db.query(sql, seatIds);
+    return results;
+  } catch (error) {
+    console.error("Error fetching held seats details:", error);
+    throw error;
+  }
+}; //orderController.getOrderDetails
 
 exports.releaseSeats = (memberId) => {
   const sql = `UPDATE seats SET status = 'V', member_id = NULL, hold_expires_at = NULL WHERE member_id = ? AND status = 'T'`;
@@ -59,18 +81,19 @@ exports.checkSeatsStatus = async (seatIds) => {
   return seats;
 }; //orderController.createOrder
 
-exports.getLockedSeatsByMemberId = async (memberId) => {
+exports.getLockedSeatsByMemberId = async (memberId, eventId) => {
   try {
     const sql = `
       SELECT seats.id, seats.seat_num AS number, seating_rows.row_num AS row_num, sections.section_name, sections.price, sections.event_id, seats.hold_expires_At
       FROM seats
       JOIN seating_rows ON seats.row_id = seating_rows.id
       JOIN sections ON seating_rows.section_id = sections.id
-      WHERE seats.member_id = ? AND seats.status = 'T'
+      WHERE seats.member_id = ? AND sections.event_id = ? AND seats.status = 'T'
     `;
-    const [lockedSeats] = await db.query(sql, [memberId]);
+    const [lockedSeats] = await db.query(sql, [memberId, eventId]);
     return lockedSeats;
   } catch (error) {
+    console.error("Database query failed:", error);
     throw new Error("Database query failed: " + error.message);
   }
 }; //seatController.cancelHold 以使用者id獲得暫時保留的座位info
@@ -204,40 +227,21 @@ exports.holdSeatsWithExpiration = (
   return db.query(sql, [memberId, holdExpireAt, orderNumber, seatIds]);
 }; //orderController.createIbonOrder
 
-exports.seatIdforSeatDiagramByEventId = async (eventId) => {
+exports.seatIdforSeatDiagramByEventId = async (eventId, areaName) => {
   const sql = `
-  SELECT seats.id, seats.status
+  SELECT seats.id, seats.status, seating_rows.row_num, seats.seat_num
   FROM seats
   INNER JOIN seating_rows ON seats.row_id = seating_rows.id
   INNER JOIN sections ON seating_rows.section_id = sections.id
-  WHERE sections.event_id = ?;
+  WHERE sections.event_id = ? AND sections.section_name = ?
+  ORDER BY seating_rows.row_num, seats.seat_num;
   `;
 
   try {
-    const [results] = await db.query(sql, [eventId]);
+    const [results] = await db.query(sql, [eventId, areaName]);
     return results;
   } catch (error) {
     console.error("Error fetching seat data:", error);
     throw error;
   }
 }; //seatController.getSeatsForEvent
-
-exports.getHeldSeatsDetails = async (seatIds) => {
-  const placeholders = seatIds.map(() => "?").join(", ");
-
-  const sql = `
-    SELECT s.id, s.seat_num AS number, sr.row_num, sec.section_name, sec.price
-    FROM seats s
-    INNER JOIN seating_rows sr ON s.row_id = sr.id
-    INNER JOIN sections sec ON sr.section_id = sec.id
-    WHERE s.id IN (${placeholders});
-  `;
-
-  try {
-    const [results] = await db.query(sql, seatIds);
-    return results;
-  } catch (error) {
-    console.error("Error fetching held seats details:", error);
-    throw error;
-  }
-}; //orderController.getOrderDetails

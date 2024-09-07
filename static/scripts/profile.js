@@ -17,7 +17,7 @@ function togglePasswordVisibility(id) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  checkSigninStatus();
+  // checkSigninStatus();
 
   fetchMemberData()
     .then((user) => {
@@ -56,8 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   document
-    .getElementById("update-password-button")
-    .addEventListener("click", async () => {
+    .getElementById("update-password-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+
       const currentPassword = document
         .getElementById("current-password")
         .value.trim();

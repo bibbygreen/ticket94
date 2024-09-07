@@ -88,14 +88,14 @@ function displayTicketOptions(areaId, price) {
       const optionValue = selectedOption.value;
 
       if (optionValue === "manual") {
-        showSeatDiagramModal(selectedAreaName, quantity, selectedAreaPrice);
+        showSeatDiagramModal(selectedAreaName);
       } else if (optionValue === "auto") {
-        autoSelectSeats(selectedAreaName, quantity);
+        autoSelectSeats(eventId, selectedAreaName, quantity);
       }
     }); //document.querySelector(".confirm-button")
 } //function displayTicketOptions
 
-async function fetchAvailableSeats(area, quantity) {
+async function fetchAvailableSeats(eventId, area, quantity) {
   console.log("Area:", area);
   console.log("Quantity:", quantity);
   const token = localStorage.getItem("token");
@@ -115,23 +115,35 @@ async function fetchAvailableSeats(area, quantity) {
 }
 
 // 根據活動 ID 取得座位
-async function fetchSeatsForArea(areaName) {
-  try {
-    const response = await fetch(`/api/seats/${eventId}?area=${areaName}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch seats for area.");
-    }
-    const seats = await response.json();
-    console.log("Fetched seats data for area:", seats);
-    return seats;
-  } catch (error) {
-    console.error("Error fetching seats for area:", error);
-    return [];
+// async function fetchSeatsForArea(areaName) {
+//   try {
+//     const response = await fetch(`/api/seats/${eventId}?area=${areaName}`);
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch seats for area.");
+//     }
+//     const seats = await response.json();
+//     console.log("Fetched seats data for area:", seats);
+//     return seats;
+//   } catch (error) {
+//     console.error("Error fetching seats for area:", error);
+//     return [];
+//   }
+// } 單一活動
+
+async function fetchSeatsForArea(eventId, areaName) {
+  if (!eventId || !areaName) {
+    throw new Error("eventId or areaName is missing.");
   }
+
+  const response = await fetch(`/api/seats/${eventId}?area=${areaName}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch seats.");
+  }
+  return await response.json(); // 返回座位數據，包含 seat_id, row_num, seat_num, status
 }
 
-async function autoSelectSeats(area, quantity) {
-  const data = await fetchAvailableSeats(area, quantity);
+async function autoSelectSeats(eventId, area, quantity) {
+  const data = await fetchAvailableSeats(eventId, area, quantity);
 
   if (!data.available || data.seats.length === 0) {
     alert("No seats available");
@@ -156,29 +168,33 @@ async function autoSelectSeats(area, quantity) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ seatIds }),
+      body: JSON.stringify({ seatIds, eventId }),
     });
-
+    const data = await response.json();
     if (response.ok) {
+      console.log("Seats held successfully:", data);
       window.location.href = `/checkout/${eventId}`;
     } else {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to hold seats.");
+      console.error("Error holding seats:", data.message);
     }
   } catch (error) {
     console.error("Error holding seats:", error);
-    alert("Error holding seats: " + error.message);
   }
 }
 
-async function showSeatDiagramModal(areaName, quantity, price) {
+async function showSeatDiagramModal(areaName) {
+  if (!eventId || !areaName) {
+    console.error("Event ID or area name is missing.", eventId, areaName);
+    return;
+  }
+
   const modal = document.createElement("div");
   modal.id = "seat-diagram-modal";
 
   const modalContent = document.createElement("div");
   modalContent.classList.add("seat-diagram-content");
 
-  const seatDiagram = await createSeatDiagram(areaName);
+  const seatDiagram = await createSeatDiagram(eventId, areaName);
 
   modalContent.innerHTML = `
   <div style="text-align: center; margin-bottom: 10px">
@@ -235,7 +251,7 @@ async function showSeatDiagramModal(areaName, quantity, price) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ seatIds }),
+          body: JSON.stringify({ seatIds, eventId }),
         });
 
         if (response.ok) {
@@ -325,11 +341,11 @@ function handleSeatSelection(seatElement) {
     const seatId = seatElement.getAttribute("seatId");
     selectedSeatsData = selectedSeatsData.filter((seat) => seat.id !== seatId);
   }
-  console.log("Updated selectedSeatsData:", selectedSeatsData);
+  // console.log("Updated selectedSeatsData:", selectedSeatsData);
 } //function handleSeatSelection
 
-async function createSeatDiagram(areaName) {
-  const seats = await fetchSeatsForArea(areaName);
+async function createSeatDiagram(eventId, areaName) {
+  const seats = await fetchSeatsForArea(eventId, areaName);
   const rows = 25;
   const seatsPerRow = 20;
   let diagram = "";
@@ -337,9 +353,10 @@ async function createSeatDiagram(areaName) {
   for (let row = 1; row <= rows; row++) {
     diagram += `<div class="row">${row}排<br>`; // Start of a row
     for (let seat = 1; seat <= seatsPerRow; seat++) {
-      const seatId = (row - 1) * seatsPerRow + seat; // 根據 row 和 seat 計算唯一座位 ID
-      const areaSeatId = calculateAreaSeatId(areaName, seatId);
-      const seatData = seats.find((s) => s.id === areaSeatId);
+      const seatData = seats.find(
+        (s) =>
+          s.row_num === row && s.seat_num === seat.toString().padStart(2, "0")
+      );
 
       const statusClass = seatData
         ? seatData.status === "V"
@@ -349,8 +366,11 @@ async function createSeatDiagram(areaName) {
           : "reserved"
         : "unknown";
 
+      // 使用從資料庫查詢到的 seatId
       diagram += `
-        <div class="seat ${statusClass}" data-row="${row}" data-seat="${seat}" seatId="${areaSeatId}">
+        <div class="seat ${statusClass}" data-row="${row}" data-seat="${seat}" seatId="${
+        seatData?.id || ""
+      }">
           ${seat}
         </div>
       `;
@@ -358,22 +378,6 @@ async function createSeatDiagram(areaName) {
     diagram += `</div><br>`; // End of a row and add a line break
   }
   return diagram;
-}
-
-// 計算區域座位 ID
-function calculateAreaSeatId(areaName, seatId) {
-  switch (areaName) {
-    case "A":
-      return seatId;
-    case "B":
-      return 500 + seatId;
-    case "C":
-      return 1000 + seatId;
-    case "D":
-      return 1500 + seatId;
-    default:
-      return seatId;
-  }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -414,3 +418,51 @@ function getEventIdFromUrl() {
     return null;
   }
 }
+
+// async function createSeatDiagram(areaName) {
+//   const seats = await fetchSeatsForArea(areaName);
+//   const rows = 25;
+//   const seatsPerRow = 20;
+//   let diagram = "";
+
+//   for (let row = 1; row <= rows; row++) {
+//     diagram += `<div class="row">${row}排<br>`; // Start of a row
+//     for (let seat = 1; seat <= seatsPerRow; seat++) {
+//       const seatId = (row - 1) * seatsPerRow + seat; // 根據 row 和 seat 計算唯一座位 ID
+//       const areaSeatId = calculateAreaSeatId(areaName, seatId);
+//       const seatData = seats.find((s) => s.id === areaSeatId);
+
+//       const statusClass = seatData
+//         ? seatData.status === "V"
+//           ? "available"
+//           : seatData.status === "T"
+//           ? "temp-held"
+//           : "reserved"
+//         : "unknown";
+
+//       diagram += `
+//         <div class="seat ${statusClass}" data-row="${row}" data-seat="${seat}" seatId="${areaSeatId}">
+//           ${seat}
+//         </div>
+//       `;
+//     }
+//     diagram += `</div><br>`; // End of a row and add a line break
+//   }
+//   return diagram;
+// } 單一活動
+
+// 計算區域座位 ID
+// function calculateAreaSeatId(areaName, seatId) {
+//   switch (areaName) {
+//     case "A":
+//       return seatId;
+//     case "B":
+//       return 500 + seatId;
+//     case "C":
+//       return 1000 + seatId;
+//     case "D":
+//       return 1500 + seatId;
+//     default:
+//       return seatId;
+//   }
+// }

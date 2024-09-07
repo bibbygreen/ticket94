@@ -65,7 +65,7 @@ app.get("/checkout/:id", function (req, res) {
   res.sendFile(__dirname + "/static/checkout.html");
 });
 
-app.get("/booking", function (req, res) {
+app.get("/booking/:id", function (req, res) {
   res.sendFile(__dirname + "/static/booking.html");
 });
 

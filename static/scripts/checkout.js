@@ -23,14 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let totalPrice = 0;
 
   const eventId = getEventIdFromUrl();
-  console.log(eventId);
   if (eventId) {
     fetchEvent(eventId);
   } else {
     console.error("Event ID not found in URL");
   }
 
-  fetch("/api/seats/locked", {
+  fetch(`/api/seats/locked?eventId=${eventId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error("Failed to fetch locked seats.");
+        throw new Error("無法取得鎖定的座位資訊。");
       }
       return response.json();
     })
@@ -49,12 +48,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (seatData && seatData.length > 0) {
         seatIds = seatData.map((seat) => seat.id);
         displaySummaryTable(seatData);
+
         const holdExpiresAtString = seatData[0].hold_expires_At;
         const holdExpiresAt = new Date(Date.parse(holdExpiresAtString));
         const now = new Date();
 
         let timeLeft = Math.floor((holdExpiresAt - now) / 1000);
-        console.log("timeLeft:", timeLeft);
+        // console.log("timeLeft:", timeLeft);
         if (timeLeft > 0) {
           startCountdown(timeLeft);
         } else {
@@ -66,9 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch((error) => {
-      console.error("獲取座位時發生錯誤", error);
+      console.error("取得座位時發生錯誤", error);
       document.getElementById("summary-container").innerHTML =
-        "<p>獲取座位資訊時發生錯誤。</p>";
+        "<p>取得座位資訊時發生錯誤。</p>";
     });
 
   function displaySummaryTable(seats) {
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Error creating order. Please try again.");
           });
       } else if (paymentMethod === "credit-card") {
-        window.location.href = `/booking.html`;
+        window.location.href = `/booking/${eventId}`;
       } else {
         alert("請選擇付款方式。");
       }

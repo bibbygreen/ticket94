@@ -36,15 +36,17 @@
       <div id="profile-info">
         <p>姓名: <span id="member-name"></span></p>
         <p>電子郵件: <span id="member-email"></span></p>
-        <p>手機號碼: <input type="text" id="member-phone"></p>
+        <p>手機號碼: <input type="text" id="member-phone" required></p>
         <button id="update-phone-button">更新手機號碼</button>
       </div>
 
       <div id="password-section">
         <h2>更改密碼</h2>
-        <p>當前密碼: <input type="password" id="current-password"></p>
-        <p>新密碼: <input type="password" id="new-password"></p>
-        <button id="update-password-button">更新密碼</button>
+        <form id="update-password-form">
+          <p>當前密碼: <input type="password" id="current-password" required></p>
+          <p>新密碼: <input type="password" id="new-password" required></p>
+          <button id="update-password-button">更新密碼</button>
+        </form>
       </div>
     </div>
   </main>

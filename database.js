@@ -90,11 +90,31 @@ function createTables() {
 
 async function insertData() {
   try {
+    await new Promise((resolve, reject) => {
+      connection.query(
+        "ALTER TABLE sections AUTO_INCREMENT = 1",
+        (err, results) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
+
+    await new Promise((resolve, reject) => {
+      connection.query(
+        "ALTER TABLE seating_rows AUTO_INCREMENT = 1",
+        (err, results) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
+
     const sections = [
-      { name: "A", price: 3000, eventId: 8 }, // 示例：eventId 設為 1
-      { name: "B", price: 3000, eventId: 8 },
-      { name: "C", price: 2500, eventId: 8 },
-      { name: "D", price: 2500, eventId: 8 },
+      { name: "A", price: 4321, eventId: 8 }, // 示例：eventId 設為 1
+      { name: "B", price: 4321, eventId: 8 },
+      { name: "C", price: 3388, eventId: 8 },
+      { name: "D", price: 3388, eventId: 8 },
     ];
 
     const sectionIds = await Promise.all(

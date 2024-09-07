@@ -73,3 +73,11 @@
   background: #c8c8c8;
   border: 2px solid #c8c8c8;
 }
+
+.purchaseProgress .progress-step.completed {
+  color: #6e2985; /* 已完成的步驟文字顏色變深 */
+}
+
+.purchaseProgress .progress-step.active {
+  color: #6e2985; /* 當前步驟的文字顏色變深 */
+}

@@ -14,7 +14,11 @@ exports.getAvailableSeats = async (req, res) => {
   }
 
   try {
-    const seats = await SeatModel.checkAvailableSeats(area, quantityNumber);
+    const seats = await SeatModel.checkAvailableSeats(
+      eventId,
+      area,
+      quantityNumber
+    );
 
     let response;
     // Check if there are enough available seats
@@ -22,7 +26,7 @@ exports.getAvailableSeats = async (req, res) => {
       response = {
         available: true,
         area: area,
-        event_id: seats.length > 0 ? seats[0].event_id : null,
+        event_id: eventId,
         seats: seats.map((seat) => ({
           id: seat.id,
           row: seat.row_num,
@@ -48,7 +52,7 @@ exports.getAvailableSeats = async (req, res) => {
 
 exports.holdSeats = async (req, res) => {
   try {
-    const { seatIds } = req.body;
+    const { seatIds, eventId } = req.body;
     const memberId = req.user.id;
 
     if (!seatIds || seatIds.length === 0) {
@@ -57,13 +61,14 @@ exports.holdSeats = async (req, res) => {
         .json({ error: true, message: "No seats selected." });
     }
 
-    await SeatModel.holdSeats(seatIds, memberId); //更改座位狀態
+    await SeatModel.holdSeats(seatIds, memberId, eventId); //更改座位狀態
 
     // 已保留座位的info
     const heldSeatsDetails = await SeatModel.getHeldSeatsDetails(seatIds);
 
     res.status(200).json({
-      message: "Seats held successfully.",
+      message: "ok",
+      eventId: eventId,
       seats: heldSeatsDetails,
     });
   } catch (error) {
@@ -104,8 +109,18 @@ exports.releaseSeats = async (req, res) => {
 exports.getLockedSeats = async (req, res) => {
   try {
     const memberId = req.user.id;
+    const eventId = req.query.eventId;
 
-    const lockedSeats = await SeatModel.getLockedSeatsByMemberId(memberId);
+    if (!eventId) {
+      return res
+        .status(400)
+        .json({ error: true, message: "Event ID is required." });
+    }
+
+    const lockedSeats = await SeatModel.getLockedSeatsByMemberId(
+      memberId,
+      eventId
+    );
 
     res.status(200).json({
       event_id: lockedSeats.length > 0 ? lockedSeats[0].event_id : null,
@@ -176,9 +191,17 @@ exports.getSeatIds = async (req, res) => {
 
 exports.getSeatsForEvent = async (req, res) => {
   const eventId = req.params.eventId;
+  const areaName = req.query.area;
+
+  if (!eventId || !areaName) {
+    return res.status(400).json({ error: "Missing eventId or areaName" });
+  }
 
   try {
-    const seats = await SeatModel.seatIdforSeatDiagramByEventId(eventId);
+    const seats = await SeatModel.seatIdforSeatDiagramByEventId(
+      eventId,
+      areaName
+    );
     res.status(200).json(seats);
   } catch (error) {
     console.error("Error fetching seats:", error);

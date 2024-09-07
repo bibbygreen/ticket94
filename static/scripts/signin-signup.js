@@ -61,6 +61,10 @@ export async function checkSigninStatus() {
       return;
     }
 
+    if (cachedUserData) {
+      return cachedUserData;
+    }
+
     const response = await fetch("/api/users/me", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -105,6 +109,8 @@ function saveCurrentPageUrl() {
 
 document.addEventListener("DOMContentLoaded", function () {
   const headlineElement = document.querySelector(".headline");
+  const signinLink = document.getElementById("signin-link");
+  const logoutLink = document.getElementById("logout-link");
 
   headlineElement.addEventListener("click", () => {
     window.location.href = "/";
@@ -112,16 +118,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const token = localStorage.getItem("token");
 
-  const signinLink = document.getElementById("signin-link");
-  const profileDropdown = document.getElementById("profile-dropdown");
-  const dropdownContent = document.querySelector(".dropdown-content");
-  const logoutLink = document.getElementById("logout-link");
-
   if (token) {
     //登入
     signinLink.style.display = "none";
-    profileDropdown.style.display = "block";
     logoutLink.style.display = "block";
+
+    const profileDropdown = document.getElementById("profile-dropdown");
+    const dropdownContent = document.querySelector(".dropdown-content");
+
+    profileDropdown.style.display = "block";
 
     // 點擊會員中心顯示或隱藏下拉選單
     profileDropdown.addEventListener("click", function (event) {
@@ -153,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     // 未登入
     signinLink.style.display = "block";
-    profileDropdown.style.display = "none";
+    // profileDropdown.style.display = "none";
     logoutLink.style.display = "none";
 
     signinLink.addEventListener("click", function () {
