@@ -147,3 +147,16 @@ tfoot td {
 .cancel-button:hover {
   background-color: #b8b8b8;
 }
+
+.timer-container{
+  max-width: 1200px;
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  background: #c11b1b;
+  color: #fff;
+  padding: 7px 8px;
+}

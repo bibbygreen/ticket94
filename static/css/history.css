@@ -58,3 +58,17 @@ tfoot {
 tfoot td {
   border-top: 2px solid #ddd;
 }
+
+.toggle-details{
+  margin: 15px 0;
+  color: #6939b7e2;
+  background-color: #ffffff;
+  border: 1px solid #6939b7e2;
+  padding: 8px 24px;
+  line-height: 1.4;
+  font-size: 16px;
+  font-weight: bold;
+}
+.toggle-details:hover{
+  background-color: #ebe2f9e2;
+}

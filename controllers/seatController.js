@@ -1,19 +1,24 @@
 // seatController.js
 const SeatModel = require("../models/seatModel");
 
-exports.checkSeats = async (req, res) => {
-  const { area, quantity } = req.body;
+exports.getAvailableSeats = async (req, res) => {
+  const { eventId } = req.params;
+  const { area, quantity } = req.query;
   const quantityNumber = Number(quantity);
 
-  // Validate input
   if (!area || typeof quantityNumber !== "number" || quantityNumber <= 0) {
     console.error("Invalid input:", { area, quantityNumber });
-    return res.status(400).json({ error: "Invalid area or quantity." });
+    return res
+      .status(400)
+      .json({ error: true, message: "Invalid area or quantity." });
   }
 
   try {
-    // Fetch available seats from the model
-    const seats = await SeatModel.checkAvailableSeats(area, quantityNumber);
+    const seats = await SeatModel.checkAvailableSeats(
+      eventId,
+      area,
+      quantityNumber
+    );
 
     let response;
     // Check if there are enough available seats
@@ -21,14 +26,13 @@ exports.checkSeats = async (req, res) => {
       response = {
         available: true,
         area: area,
-        event_id: seats.length > 0 ? seats[0].event_id : null,
+        event_id: eventId,
         seats: seats.map((seat) => ({
           id: seat.id,
           row: seat.row_num,
           number: seat.number,
           price: seat.price,
         })),
-        price: seats.length > 0 ? seats[0].price : 0,
       };
     } else {
       response = {
@@ -36,24 +40,39 @@ exports.checkSeats = async (req, res) => {
       };
     }
 
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error checking seats:", error.message);
-    res
-      .status(500)
-      .json({ error: "An error occurred while checking available seats." });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while checking available seats.",
+    });
   }
 };
 
 exports.holdSeats = async (req, res) => {
   try {
-    const { seatIds } = req.body;
+    const { seatIds, eventId } = req.body;
     const memberId = req.user.id;
 
-    await SeatModel.holdSeats(seatIds, memberId);
-    res.send("Seats held successfully.");
+    if (!seatIds || seatIds.length === 0) {
+      return res
+        .status(400)
+        .json({ error: true, message: "No seats selected." });
+    }
+
+    await SeatModel.holdSeats(seatIds, memberId, eventId); //更改座位狀態
+
+    // 已保留座位的info
+    const heldSeatsDetails = await SeatModel.getHeldSeatsDetails(seatIds);
+
+    res.status(200).json({
+      message: "ok",
+      eventId: eventId,
+      seats: heldSeatsDetails,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, message: error.message });
   }
 };
 
@@ -61,47 +80,58 @@ exports.reserveSeats = async (req, res) => {
   try {
     const { seatIds, orderNumber } = req.body;
 
-    // 在確認前，檢查座位是否為 temporary_hold
+    // 訂購前，檢查座位是否為 temporary_hold
     const heldSeats = await SeatModel.checkSeatsStatus(seatIds);
 
     if (heldSeats.length !== seatIds.length) {
       return res
         .status(400)
-        .json({ error: "Some seats are no longer available." });
+        .json({ error: true, message: "Some seats are no longer available." });
     }
 
     await SeatModel.reserveSeats(seatIds, orderNumber);
-    res.send("Seats reserved successfully.");
+    res.status(200).send("Seats reserved successfully.");
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, message: error.message });
   }
 };
 
 exports.releaseSeats = async (req, res) => {
   try {
-    const userId = req.user.id;
-    await SeatModel.releaseSeats(userId);
-    res.send("Seats released successfully.");
+    const memberId = req.user.id;
+    await SeatModel.releaseSeats(memberId);
+    res.status(200).send("Seats released successfully.");
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, message: error.message });
   }
 };
 
 exports.getLockedSeats = async (req, res) => {
   try {
     const memberId = req.user.id;
+    const eventId = req.query.eventId;
 
-    const lockedSeats = await SeatModel.getLockedSeatsByMemberId(memberId);
+    if (!eventId) {
+      return res
+        .status(400)
+        .json({ error: true, message: "Event ID is required." });
+    }
 
-    res.json({
+    const lockedSeats = await SeatModel.getLockedSeatsByMemberId(
+      memberId,
+      eventId
+    );
+
+    res.status(200).json({
       event_id: lockedSeats.length > 0 ? lockedSeats[0].event_id : null,
       seats: lockedSeats,
     });
   } catch (error) {
     console.error("Error fetching locked seats:", error.message);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching locked seats." });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while fetching locked seats.",
+    });
   }
 };
 
@@ -120,19 +150,21 @@ exports.cancelHold = async (req, res) => {
 
     if (validSeatIds.length !== seatIds.length) {
       return res.status(400).json({
-        error:
+        error: true,
+        message:
           "Some seats are not held by this user or are not in hold status.",
       });
     }
 
     // 取消暫時保留，將座位狀態設置為 available
     await SeatModel.releaseSeats(seatIds);
-    res.send("Hold canceled successfully.");
+    res.status(200).send("Hold canceled successfully.");
   } catch (error) {
     console.error("Error canceling hold:", error.message);
-    res
-      .status(500)
-      .json({ error: "An error occurred while canceling the hold." });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while canceling the hold.",
+    });
   }
 };
 
@@ -140,16 +172,39 @@ exports.getSeatIds = async (req, res) => {
   const { area, seats } = req.body;
 
   if (!area || !seats || !Array.isArray(seats) || seats.length === 0) {
-    return res.status(400).json({ error: "Invalid area or seats data." });
+    return res
+      .status(400)
+      .json({ error: true, message: "Invalid area or seats data." });
   }
 
   try {
     const seatIds = await SeatModel.findSeatIdsByDetails(area, seats);
-    res.json({ seatIds });
+    res.status(200).json({ seatIds });
   } catch (error) {
     console.error("Error getting seat IDs:", error.message);
-    res
-      .status(500)
-      .json({ error: "An error occurred while getting seat IDs." });
+    res.status(500).json({
+      error: true,
+      message: "An error occurred while getting seat IDs.",
+    });
+  }
+};
+
+exports.getSeatsForEvent = async (req, res) => {
+  const eventId = req.params.eventId;
+  const areaName = req.query.area;
+
+  if (!eventId || !areaName) {
+    return res.status(400).json({ error: "Missing eventId or areaName" });
+  }
+
+  try {
+    const seats = await SeatModel.seatIdforSeatDiagramByEventId(
+      eventId,
+      areaName
+    );
+    res.status(200).json(seats);
+  } catch (error) {
+    console.error("Error fetching seats:", error);
+    res.status(500).json({ error: true, message: "Failed to fetch seats" });
   }
 };

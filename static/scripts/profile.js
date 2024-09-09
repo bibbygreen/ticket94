@@ -4,6 +4,8 @@ import {
   showToast,
 } from "./signin-signup.js";
 
+let cachedUserData = null;
+
 function togglePasswordVisibility(id) {
   const passwordField = document.getElementById(id);
   const passwordFieldType = passwordField.getAttribute("type");
@@ -15,7 +17,7 @@ function togglePasswordVisibility(id) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  checkSigninStatus();
+  // checkSigninStatus();
 
   fetchMemberData()
     .then((user) => {
@@ -33,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const phone = document.getElementById("member-phone").value;
 
       try {
-        const response = await fetch("/api/user/phone", {
+        const response = await fetch("/api/users/me/phone", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -54,21 +56,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   document
-    .getElementById("update-password-button")
-    .addEventListener("click", async () => {
+    .getElementById("update-password-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+
       const currentPassword = document
         .getElementById("current-password")
         .value.trim();
       const newPassword = document.getElementById("new-password").value.trim();
 
-      // 檢查 currentPassword 和 newPassword 是否都有值
       if (!currentPassword || !newPassword) {
         alert("請填寫所有欄位");
         return;
       }
 
       try {
-        const response = await fetch("/api/user/password", {
+        const response = await fetch("/api/users/me/password", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

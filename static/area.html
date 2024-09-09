@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Ticket Selection</title>
-    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/area.css">
+    <link rel="stylesheet" href="/css/navbar.css">    
     <link rel="stylesheet" href="/css/progress.css">
     <link rel="stylesheet" href="/css/event-profile.css">
     <link rel="stylesheet" href="/css/signin-signup.css">
+    <link rel="stylesheet" href="../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
 </head>
 <body>
   <header>
@@ -34,22 +35,25 @@
 
   <main>
     <div class="container">
-      <section class="progress-bar">
-        <div class="progress-step active">選擇票區</div>
-        <div class="progress-step">確認資料</div>
-        <div class="progress-step">付款結帳</div>
-        <div class="progress-step">購票完成</div>
-      </section>
+      <div class="purchaseProgress">
+        <div class="progress-track">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-step active" data-step="1">選擇票區</div>
+        <div class="progress-step" data-step="2">確認資料</div>
+        <div class="progress-step" data-step="3">付款結帳</div>
+        <div class="progress-step" data-step="4">購票完成</div>
+      </div>
 
       <section class="event-profile">
         <div class="event-image">
-          <img src="https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg" alt="Event Image">
+          <img src="" alt="Event Image">
         </div>
         <div class="event-details">
-          <h2>2024 THE LAST FAN-CON [CURTAIN CALL] IN TAIPEI</h2>
-          <p>Date: 2024年09月14日 (六)</p>
-          <p>Time: 18:00</p>
-          <p>Location: TICC台北國際會議中心</p>
+          <h2></h2>
+          <p>日期: </p>
+          <p>時間: </p>
+          <p>地點: </p>
         </div>
       </section>
 
@@ -59,24 +63,23 @@
         </div>
         <div class="area-options">
           <h2>票區一覽</h2>
+          <!-- 動態票區 -->
+        </div>
+      </section>
+      
+
+      <!-- <section class="area-selection">
+        <div class="area-diagram">
+          <img src="/pics/seat-diagram.jpg" alt="Seating Diagram">
+        </div>
+        <div class="area-options">
+          <h2>票區一覽</h2>
           <div class="area" data-area="A">
             <span class="area-name">A區</span>
             <span class="area-price">NT 3,000元</span>
           </div>
-          <div class="area" data-area="B">
-            <span class="area-name">B區</span>
-            <span class="area-price">NT 3,000元</span>
-          </div>
-          <div class="area" data-area="C">
-            <span class="area-name">C區</span>
-            <span class="area-price">NT 2,500元</span>
-          </div>
-          <div class="area" data-area="D">
-            <span class="area-name">D區</span>
-            <span class="area-price">NT 2,500元</span>
-          </div>
         </div>
-      </section>
+      </section> -->
 
       <section class="ticket-selection">
         <div class="selection-options">
@@ -99,6 +102,7 @@
   </footer>
   <div id="toast" class="toast"></div>
   <script type="module" src="/scripts/area.js"></script>
+  <script type="module" src="/scripts/fetchEvent.js"></script>
   <script type="module" src="/scripts/signin-signup.js" defer></script>
 </body>
 </html>

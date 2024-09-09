@@ -1,4 +1,3 @@
-/* General Styles */
 * {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -40,39 +39,35 @@
 }
 
 .tabs {
+  height: 50px;
   position: fixed;
   top: 50px;
   left: 0;
   right: 0;
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
+  background-color: #fff; 
   z-index: 50;
   display: flex;
   justify-content: center;
-  padding: 10px 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for better visibility */
+  line-height: 30px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
 }
 
 .tab {
   display: inline-block;
-  background-color: #f4f4f4;
-  border: 1px solid #ddd;
   padding: 10px 20px;
   cursor: pointer;
   margin-left: 10px;
-  border-radius: 5px;
   text-align: center;
 }
 
 .tab.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  color: #56206c;
+  border-bottom: 5px solid #a742cf;
 }
 
 .container {
   max-width: 1200px;
-  padding-top: 30px; /* Adjusted for the fixed height of header and tabs */
+  padding-top: 30px;
   margin: auto;
   padding: 20px;
 }
@@ -96,14 +91,6 @@
   display: block;
 }
 
-/* .event-box {
-  width: 382px;
-  border: 1px solid #CCCCCC;
-  border-radius: 5px;
-  margin: 7px;
-  margin-top: 20px;
-} */
-
 .buying-details {
   width: 100%;
   border-collapse: collapse;
@@ -123,7 +110,7 @@
 }
 
 .buy-button {
-  background-color: #007bff; /* Blue background color */
+  background-color: #611da1; /* Blue background color */
   border: none;
   color: white;
   padding: 10px 20px;
@@ -137,15 +124,24 @@
 }
 
 .buy-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #8021d9; /* Darker blue on hover */
 }
-
-.event-box img {
-  max-height: 200px;
+.event-box{
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  max-height: 200px;      
   width: 380px;
+  overflow: hidden;       
+}
+.event-box img {
+  max-height: 100%;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  /* margin-left: auto;
+  margin-right: auto; */
+  margin: auto;
+  height: auto;
+  width: auto;
 }
 
 .div-event-title {

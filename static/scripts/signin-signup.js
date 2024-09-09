@@ -1,21 +1,55 @@
+let cachedUserData = null;
+
+export function requireAuth(redirectTo = "/") {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = redirectTo;
+    return false;
+  }
+  return true;
+}
+
+export function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    // JWT exp 是以秒為單位的 UNIX
+    const expiryTime = payload.exp * 1000;
+    const currentTime = Date.now();
+
+    return currentTime > expiryTime;
+  } catch (error) {
+    console.error("解析 Token 發生錯誤：", error);
+    return true; // 如果無法解析 Token，視為過期
+  }
+}
+
 export async function verifyUserSignInToken() {
   const token = localStorage.getItem("token");
 
   if (token) {
     try {
-      const response = await fetch("/api/user/auth", {
+      const response = await fetch("/api/users/me", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
         console.error("Server response:", await response.text());
+        window.location.href = "/";
         throw new Error("Token verification failed");
       }
       return await response.json();
     } catch (error) {
       console.error("Error during token verification:", error);
+      window.location.href = "/";
       throw error;
     }
+  } else {
+    showToast("購票前請先登入");
+    setTimeout(() => {
+      window.location.href = "/signin";
+    }, 2000);
   }
 }
 
@@ -27,7 +61,11 @@ export async function checkSigninStatus() {
       return;
     }
 
-    const response = await fetch("/api/user/auth", {
+    if (cachedUserData) {
+      return cachedUserData;
+    }
+
+    const response = await fetch("/api/users/me", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -37,7 +75,7 @@ export async function checkSigninStatus() {
     }
 
     const userData = await response.json();
-    // console.log("User is logged in:", userData);
+    cachedUserData = userData;
   } catch (error) {
     console.error("User not logged in or token invalid:", error);
     window.location.href = "/";
@@ -45,10 +83,14 @@ export async function checkSigninStatus() {
 }
 
 export async function fetchMemberData() {
+  if (cachedUserData) {
+    return cachedUserData;
+  }
+
   const token = localStorage.getItem("token");
   if (!token) throw new Error("No token available");
 
-  const response = await fetch("/api/user/auth", {
+  const response = await fetch("/api/users/me", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -56,7 +98,7 @@ export async function fetchMemberData() {
   if (!response.ok) throw new Error("Failed to fetch member data");
 
   const data = await response.json();
-  console.log(data); // Check the structure of data here
+  cachedUserData = data;
   return data;
 }
 
@@ -67,6 +109,8 @@ function saveCurrentPageUrl() {
 
 document.addEventListener("DOMContentLoaded", function () {
   const headlineElement = document.querySelector(".headline");
+  const signinLink = document.getElementById("signin-link");
+  const logoutLink = document.getElementById("logout-link");
 
   headlineElement.addEventListener("click", () => {
     window.location.href = "/";
@@ -74,16 +118,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const token = localStorage.getItem("token");
 
-  const signinLink = document.getElementById("signin-link");
-  const profileDropdown = document.getElementById("profile-dropdown");
-  const dropdownContent = document.querySelector(".dropdown-content");
-  const logoutLink = document.getElementById("logout-link");
-
   if (token) {
     //登入
     signinLink.style.display = "none";
-    profileDropdown.style.display = "block";
     logoutLink.style.display = "block";
+
+    const profileDropdown = document.getElementById("profile-dropdown");
+    const dropdownContent = document.querySelector(".dropdown-content");
+
+    profileDropdown.style.display = "block";
 
     // 點擊會員中心顯示或隱藏下拉選單
     profileDropdown.addEventListener("click", function (event) {
@@ -115,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     // 未登入
     signinLink.style.display = "block";
-    profileDropdown.style.display = "none";
+    // profileDropdown.style.display = "none";
     logoutLink.style.display = "none";
 
     signinLink.addEventListener("click", function () {
@@ -124,7 +167,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// 處理登入表單提交
 const signInForm = document.getElementById("signInForm");
 if (signInForm) {
   signInForm.addEventListener("submit", async function (event) {
@@ -134,7 +176,7 @@ if (signInForm) {
     const password = document.getElementById("signin-password").value;
 
     try {
-      const response = await fetch("/api/user/auth", {
+      const response = await fetch("/api/users/auth", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +193,7 @@ if (signInForm) {
           window.location.href = "/";
         }, 2000);
       } else {
-        showToast("登入失敗：" + data.error);
+        showToast("登入失敗：" + data.message);
       }
     } catch (error) {
       console.error("發生錯誤：", error);
@@ -160,7 +202,6 @@ if (signInForm) {
   });
 }
 
-// 處理註冊表單提交
 const signUpForm = document.getElementById("signUpForm");
 if (signUpForm) {
   signUpForm.addEventListener("submit", async function (event) {
@@ -172,7 +213,7 @@ if (signUpForm) {
     const password = document.getElementById("signup-password").value;
 
     try {
-      const response = await fetch("/api/user", {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +229,7 @@ if (signUpForm) {
           window.location.href = "/signin";
         }, 2000);
       } else {
-        showToast("註冊失敗：" + data.error);
+        showToast("註冊失敗：" + data.message);
       }
     } catch (error) {
       console.error("發生錯誤：", error);

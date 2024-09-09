@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   );
 
   try {
-    const response = await fetch("/api/query", {
+    const response = await fetch("/api/history/orders", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +53,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <td>${order.order_number}</td>
                 <td>${formattedCreatedTime}</td>
                 <td>${order.eventName}</td>
-                <td>${paymentInfo}</td>
+                <td>${paymentInfo}<br>
+                <button class="toggle-details">展開明細</button></td>
               </tr>
             </tbody>
           </table>
@@ -61,39 +62,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           // 第二個表格：活動詳情、票區、位置、票種/金額
           const seatsTable = `
-          <table>
-            <thead>
-              <tr>
-                <th>日期/時間/地點</th>
-                <th>票區</th>
-                <th>位置</th>
-                <th>票種/金額</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.seats
-                .map(
-                  (seat) => `
+          <div class="details" style="display: none;">
+            <table>
+              <thead>
                 <tr>
-                  <td>
-                    ${order.date}<br>
-                    ${order.time}<br>
-                    ${order.location}
-                  </td>
-                  <td>${seat.section_name}</td>
-                  <td>${seat.row_num}排${seat.number}號</td>
-                  <td>全票 / ${seat.price}元</td>
+                  <th>日期/時間/地點</th>
+                  <th>票區</th>
+                  <th>位置</th>
+                  <th>票種/金額</th>
                 </tr>
-              `
-                )
-                .join("")}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${order.seats
+                  .map(
+                    (seat) => `
+                  <tr>
+                    <td>
+                      ${order.date}<br>
+                      ${order.time}<br>
+                      ${order.location}
+                    </td>
+                    <td>${seat.section_name}</td>
+                    <td>${seat.row_num}排${seat.number}號</td>
+                    <td>全票 / ${seat.price}元</td>
+                  </tr>
+                `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
           <hr>
       `;
 
           orderDiv.innerHTML = orderInfoTable + seatsTable;
           orderHistoryContainer.appendChild(orderDiv);
+
+          // 展開明細
+          const toggleButton = orderDiv.querySelector(".toggle-details");
+          const detailsDiv = orderDiv.querySelector(".details");
+
+          toggleButton.addEventListener("click", () => {
+            if (detailsDiv.style.display === "none") {
+              detailsDiv.style.display = "block";
+              toggleButton.textContent = "收起明細";
+            } else {
+              detailsDiv.style.display = "none";
+              toggleButton.textContent = "展開明細";
+            }
+          });
         });
       } else {
         orderHistoryContainer.innerHTML = "<p>目前沒有訂單紀錄。</p>";

@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
-    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/checkout.css">
+    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/progress.css">
     <link rel="stylesheet" href="/css/event-profile.css">
     <link rel="stylesheet" href="/css/signin-signup.css">
+    <link rel="stylesheet" href="../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
 </head>
 <body>
   <header>
@@ -31,25 +32,32 @@
       </div>     
     </div>
   </header>
-  
+
+  <div class="timer-container">
+    <div class="timer">您的訂單已保留，請在 <span id="timer">--:--</span> 內完成付款，若超過時限，系統將自動取消訂單</div>
+  </div>
+
   <main>
     <div class="container">
-      <section class="progress-bar">
-        <div class="progress-step">選擇票區</div>
-        <div class="progress-step active">確認資料</div>
-        <div class="progress-step">付款結帳</div>
-        <div class="progress-step">購票完成</div>
-      </section>
+      <div class="purchaseProgress">
+        <div class="progress-track">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-step active" data-step="1">選擇票區</div>
+        <div class="progress-step" data-step="2">確認資料</div>
+        <div class="progress-step" data-step="3">付款結帳</div>
+        <div class="progress-step" data-step="4">購票完成</div>
+      </div>
 
       <section class="event-profile">
         <div class="event-image">
-          <img src="https://static.ticketplus.com.tw/event/f8704ca7ddebb0ba12000f5ff4f76a45/picBigActiveMain_1722854812562.jpeg" alt="Event Image">
+          <img src="" alt="Event Image">
         </div>
         <div class="event-details">
-          <h2>2024 THE LAST FAN-CON [CURTAIN CALL] IN TAIPEI</h2>
-          <p>Date: 2024年09月14日 (六)</p>
-          <p>Time: 18:00</p>
-          <p>Location: TICC台北國際會議中心</p>
+          <h2></h2>
+          <p>日期: </p>
+          <p>時間: </p>
+          <p>地點: </p>
         </div>
       </section>
 
@@ -112,6 +120,7 @@
   </footer>
   <div id="toast" class="toast"></div>
   <script type="module" src="/scripts/checkout.js"></script>
+  <script type="module" src="/scripts/fetchEvent.js"></script>
   <script type="module" src="/scripts/signin-signup.js" defer></script>
 </body>
 </html>

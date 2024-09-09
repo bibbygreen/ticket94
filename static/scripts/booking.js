@@ -1,9 +1,33 @@
-import { fetchMemberData } from "./signin-signup.js";
+import { fetchMemberData, requireAuth } from "./signin-signup.js";
+import { activateStep } from "./progress.js";
+import { fetchEvent } from "./fetchEvent.js";
+
+function getEventIdFromUrl() {
+  const href = window.location.href;
+  const pattern = /\/booking\/(\d+)/;
+  const match = href.match(pattern);
+  if (match) {
+    return match[1];
+  } else {
+    console.error("Invalid URL format. Unable to extract event ID.");
+    return null;
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
+  requireAuth();
+  activateStep(3);
+
   let seatIds = [];
 
-  fetch("/api/locked-seats", {
+  const eventId = getEventIdFromUrl();
+  if (eventId) {
+    fetchEvent(eventId);
+  } else {
+    console.error("Event ID not found in URL");
+  }
+
+  fetch(`/api/seats/locked?eventId=${eventId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -12,24 +36,39 @@ document.addEventListener("DOMContentLoaded", () => {
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error("無法獲取鎖定的座位資訊。");
+        throw new Error("無法取得鎖定的座位資訊。");
       }
       return response.json();
     })
     .then((data) => {
       const seatData = data.seats;
+
       if (seatData && seatData.length > 0) {
+        // const eventId = seatData[0].event_id;
+        // fetchEvent(eventId);
+
         seatIds = seatData.map((seat) => seat.id);
         displaySummaryTable(seatData);
+
+        const holdExpiresAtString = seatData[0].hold_expires_At;
+        const holdExpiresAt = new Date(Date.parse(holdExpiresAtString));
+        const now = new Date();
+
+        let timeLeft = Math.floor((holdExpiresAt - now) / 1000);
+        if (timeLeft > 0) {
+          startCountdown(timeLeft);
+        } else {
+          alert("您的訂單已逾期");
+        }
       } else {
         document.getElementById("summary-container").innerHTML =
-          "<p>無座位選擇。</p>";
+          "<p>尚未選擇任何座位。</p>";
       }
     })
     .catch((error) => {
-      console.error("獲取鎖定座位時出錯：", error);
+      console.error("取得座位時發生錯誤：", error);
       document.getElementById("summary-container").innerHTML =
-        "<p>獲取座位資訊時發生錯誤。</p>";
+        "<p>取得座位資訊時發生錯誤。</p>";
     });
 
   fetchMemberData()
@@ -46,8 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cancelButton) {
     cancelButton.addEventListener("click", () => {
       // 釋放所有座位
-      fetch("/api/release-seats", {
-        method: "POST",
+      fetch("/api/seats/release", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -75,6 +114,30 @@ document.addEventListener("DOMContentLoaded", () => {
   script.async = true;
   script.onload = setupTPDirectSDK;
   document.head.appendChild(script);
+
+  function startCountdown(timeLeft) {
+    const timerElement = document.getElementById("timer");
+
+    const interval = setInterval(() => {
+      if (timeLeft < 0) {
+        clearInterval(interval);
+        timerElement.textContent = "00:00";
+        alert("逾時繳費，訂單已取消");
+        window.location.href = "/";
+        return;
+      }
+
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      if (!isNaN(minutes) && !isNaN(seconds)) {
+        timerElement.textContent = `${minutes}:${
+          seconds < 10 ? "0" : ""
+        }${seconds}`;
+      }
+
+      timeLeft--;
+    }, 1000);
+  }
 
   function displaySummaryTable(seats) {
     let totalPrice = 0;
@@ -112,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </tr>
           <tr>
             <td colspan="3" style="text-align: right;">總金額</td>
-            <td  id="amount" style="color:red">${totalPrice} 元</td>
+            <td  id="amount" style="color:red">${totalPrice.toLocaleString()} 元</td>
           </tr>
         </tbody>
       </table>

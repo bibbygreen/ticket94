@@ -1,15 +1,28 @@
-import { verifyUserSignInToken } from "./signin-signup.js";
+import {
+  isTokenExpired,
+  verifyUserSignInToken,
+  showToast,
+} from "./signin-signup.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".tab");
   const tabContents = document.querySelectorAll(".tab-content");
   const navbarHeight = document.querySelector(".tabs").offsetHeight;
+  const token = localStorage.getItem("token");
 
   let eventId;
 
-  // Extract attraction ID from URL
+  if (token) {
+    if (isTokenExpired(token)) {
+      showToast("您的登入已過期，請重新登入");
+      localStorage.removeItem("token");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    }
+  }
+
   const href = location.href;
-  // const pattern = /^https?:\/\/.+\/event\/(\d+)/;
   const pattern = /\/event\/(\d+)/;
   const match = href.match(pattern);
   if (match) {
@@ -44,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   tabs.forEach((tab) => tab.addEventListener("click", handleTabClick));
 
   async function fetchEvent(id) {
-    const url = `/api/event/${id}`;
+    const url = `/api/events/${id}`;
     try {
       const response = await fetch(url, { method: "GET" });
 
@@ -100,14 +113,13 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${
             data.onSale
               ? '<button class="buy-button">立即購買</button>'
-              : "尚未開賣"
+              : "已售完"
           }</td>
         </tr>
       </tbody>
     </table>
   `;
 
-    // Update "活動介紹" tab content
     tabContentIntroduction.innerHTML = `
       <h2>活動介紹</h2>
       <br>
@@ -151,11 +163,13 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Navigating to area page with eventId:", eventId); ////
         window.location.href = `/area/${eventId}`;
       } else {
-        window.location.href = "/signin";
+        showToast("購票前請先登入");
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
       }
     } catch (error) {
       console.error("Error checking user sign-in status:", error);
-      // Optionally handle error (e.g., show an error message to the user)
     }
   }
   // Add event listener to all buy buttons

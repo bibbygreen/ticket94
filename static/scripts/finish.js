@@ -1,4 +1,11 @@
+import { requireAuth } from "./signin-signup.js";
+import { activateStep } from "./progress.js";
+import { fetchEvent } from "./fetchEvent.js";
+
 document.addEventListener("DOMContentLoaded", () => {
+  requireAuth();
+  activateStep(4);
+
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
@@ -23,6 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const { order, seats } = data;
       if (seats && seats.length > 0) {
         displaySummaryTable(seats, order);
+
+        const eventId = seats[0].event_id;
+        fetchEvent(eventId);
       } else {
         document.getElementById("summary-container").innerHTML =
           "<p>No seat selection found.</p>";
