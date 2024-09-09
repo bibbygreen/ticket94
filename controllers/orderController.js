@@ -148,7 +148,7 @@ exports.createIbonOrder = async (req, res) => {
     }
 
     // 更新座位狀態為 T，並設定 hold_expire_at
-    const holdExpireAt = new Date(Date.now() + 60 * 5 * 1000); // 當前時間 + 5 分鐘
+    const holdExpireAt = new Date(Date.now() + 60 * 60 * 1000); // 當前時間 + 5 分鐘
 
     await SeatModel.holdSeatsWithExpiration(
       seatIds,
