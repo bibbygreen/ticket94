@@ -113,7 +113,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
         });
       } else {
-        orderHistoryContainer.innerHTML = "<p>目前沒有訂單紀錄。</p>";
+        orderHistoryContainer.innerHTML =
+          "<p style='height: 65vh;'>目前沒有訂單紀錄。</p>";
       }
     } else {
       orderHistoryContainer.innerHTML = "<p>無法取得訂單紀錄，請稍後再試。</p>";
