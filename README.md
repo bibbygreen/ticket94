@@ -2,6 +2,8 @@
 Ticket94 is a full-stack ticketing platform designed for performance and event ticket sales. The website allows users to easily browse available events and, after logging in, purchase tickets and manage their orders. Built with a comprehensive backend and a user-friendly frontend, Ticket94 ensures seamless interactions and secure transactions, providing a smooth experience for both event organizers and attendees. Ticket is just for fun!
 
 # Demo
+https://ticket94.fun/
+
 member system 
 * test account: user01@user.com  
 * test password: user01
